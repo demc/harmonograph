@@ -186,7 +186,7 @@ class PendulumDial {
 
 class Pendulum1D {
 
-  constructor(scene, x, y, width, height, amplitude) {
+  constructor(scene, x, y, width, height, amplitude, frequency) {
     this.scene = scene;
     this.ctx = scene.ctx;
     this.height = height;
@@ -195,7 +195,7 @@ class Pendulum1D {
     this.y = y;
 
     this.amplitude = amplitude;
-    this.frequency = 2 * Math.PI; // One 'cycle' per 1 second
+    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = HALF_PI; // Must be in radians
 
     this.t = 0;
@@ -284,14 +284,14 @@ class Pendulum1D {
 
 class UnitCircle {
 
-  constructor(scene, x, y, radius) {
+  constructor(scene, x, y, radius, frequency) {
     this.scene = scene;
     this.ctx = scene.ctx;
     this.x = x;
     this.y = y;
 
     this.radius = radius;
-    this.frequency = 2 * Math.PI; // One 'cycle' per 1 second
+    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = HALF_PI; // must be in radians
 
     this.t = 0;
@@ -380,7 +380,7 @@ class UnitCircle {
 
 class SineWave {
 
-  constructor(scene, x, y, width, height, amplitude, radius) {
+  constructor(scene, x, y, width, height, amplitude, frequency) {
     this.scene = scene;
     this.ctx = scene.ctx;
     this.x = x;
@@ -388,9 +388,8 @@ class SineWave {
     this.height = height;
     this.width = width;
 
-    this.amplitude = amplitude; 
-    this.radius = amplitude;
-    this.frequency = 2 * Math.PI; // One 'cycle' per second
+    this.amplitude = amplitude;
+    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per second
     this.phaseShift = HALF_PI;
 
     this.t = 0;
@@ -464,7 +463,7 @@ class SineWave {
 
     for (let i = 0; i < this._steps.length; i++) {
       const y = this._steps[this._steps.length - i - 1];
-      const x = (this.frequency * i * TICK_IN_SEC * this.radius) / Math.PI;
+      const x = (this.frequency * i * TICK_IN_SEC * this.amplitude) / Math.PI;
 
       const dx = xPos - x;
       const dy = yPos - y;

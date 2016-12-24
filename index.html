@@ -43,7 +43,7 @@
     <ul>
       <li>
         <label for="frequency">Frequency (radians)</label>
-        <input type="number" id="frequency" step="0.25" value="2.0" />
+        <input type="number" id="frequency" step="0.25" value="1.0" />
       </li>
       <li>
         <label>Phase Shift (radians)</label>
@@ -63,10 +63,10 @@
       let p = document.getElementById('p');
       let ctx = p.getContext('2d');
       let scene = new Scene(ctx, 400, 500);
-      let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10, 100);
-      let penulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100);
-      let unitCircle = new UnitCircle(scene, 200, 350, 100);
-      let sineWave = new SineWave(scene, 20, 300, 180, 100, 100);
+      let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10, 100, Math.PI);
+      let penulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100, Math.PI);
+      let unitCircle = new UnitCircle(scene, 200, 350, 100, Math.PI);
+      let sineWave = new SineWave(scene, 20, 300, 180, 100, 100, Math.PI);
 
       scene.start();
 
