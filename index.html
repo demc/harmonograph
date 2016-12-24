@@ -5,13 +5,22 @@
 
     <style>
 
+      html, body {
+        font-family: courier;
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
       canvas {
         border: 1px solid black;
       }
 
       label {
         display: inline-block;
-        width: 150px;
+        width: 175px;
       }
 
       input {
@@ -27,20 +36,22 @@
     </style>
   </head>
   <body>
+    <h1>1 Dimensional Pendular Motion</h1>
+
     <canvas id="p" width="400" height="500"></canvas>
 
     <ul>
       <li>
         <label for="frequency">Frequency (radians)</label>
-        <input type="number" id="frequency" value="2" />
+        <input type="number" id="frequency" step="0.25" value="2.0" />
       </li>
       <li>
         <label>Phase Shift (radians)</label>
-        <input type="number" id="phase-shift" value="0.5" />
+        <input type="number" id="phase-shift" step="0.25" value="0.5" />
       </li>
       <li>
         <label>Amplitude (pixels)</label>
-        <input type="number" id="amplitude" value="50" />
+        <input type="number" id="amplitude" step="10" value="100" />
       </li>
       <li>
         <button id="pause">Pause</button>
@@ -52,10 +63,10 @@
       let p = document.getElementById('p');
       let ctx = p.getContext('2d');
       let scene = new Scene(ctx, 400, 500);
-      let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10);
-      let unitCircle = new UnitCircle(scene, 200, 350, 50);
-      let sineWave = new SineWave(scene, 20, 300, 180, 100, 50);
-      let penulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 90);
+      let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10, 100);
+      let penulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100);
+      let unitCircle = new UnitCircle(scene, 200, 350, 100);
+      let sineWave = new SineWave(scene, 20, 300, 180, 100, 100);
 
       scene.start();
 
@@ -74,14 +85,50 @@
       const phaseShiftInput = document.getElementById('phase-shift');
       const amplitudeInput = document.getElementById('amplitude');
 
-      frequencyInput.addEventListener('change', (e) => {
-        const value = parseFloat(e.target.value);
+      frequencyInput.addEventListener(
+        'input',
+        createInputHandler(
+          frequencyInput,
+          [pendulumDial, unitCircle, penulum1D, sineWave],
+          'setFrequency',
+          Math.PI
+        )
+      );
 
-        if (isFinite(value)) {
-          const frequency = value * Math.PI;
-          pendulumDial.setFrequency(frequency);
-        }
-      });
+      phaseShiftInput.addEventListener(
+        'input',
+        createInputHandler(
+          phaseShiftInput,
+          [pendulumDial, unitCircle, penulum1D, sineWave],
+          'setPhaseShift',
+          Math.PI
+        )
+      );
+
+      amplitudeInput.addEventListener(
+        'input',
+        createInputHandler(
+          amplitudeInput,
+          [pendulumDial, unitCircle, penulum1D, sineWave],
+          'setAmplitude'
+        )
+      );
+
+      function createInputHandler(input, components, methodName, multiplier) {
+        return (e) => {
+          let value = parseFloat(e.target.value);
+
+          if (isFinite(value)) {
+            scene.reset();
+
+            if (isFinite(multiplier)) {
+              value = value * multiplier;
+            }
+            
+            components.forEach(component => component[methodName](value));
+          }
+        };
+      }
     </script>
   </body>
 </html>

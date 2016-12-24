@@ -80,6 +80,17 @@ class Scene {
     this.playing = false;
   }
 
+  reset() {
+    this.stop();
+    tickCount = 0;
+
+    this.objects.forEach((obj) => {
+      obj.t = 0;
+    });
+
+    this.start();
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.objects.forEach((obj) => obj.draw());
@@ -112,13 +123,91 @@ class PendulumDial {
     this.y = y;
 
     this.amplitude = amplitude || width / 2;
-    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 4 seconds
+    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = phaseShift || HALF_PI; // Must be in radians
 
     this.t = 0;
     this._dialXOrigin = this.x + this.width / 2; 
     this._dialXDelta = this._delta(this._t);
     this._dialXPosition = this._dialXOrigin + this._dialXDelta;
+
+    scene.addObject(this);
+  }
+
+  setAmplitude(amplitude) {
+    this.amplitude = amplitude;
+    this._ampHalf = this.amplitude / 2;
+    return this;
+  }
+
+  setFrequency(frequency) {
+    this.frequency = frequency;
+    return this;
+  }
+
+  setPhaseShift(phaseShift) {
+    this.phaseShift = phaseShift;
+    return this;
+  }
+
+  draw() {
+    this.drawLine();
+    this.drawDial();
+  }
+
+  drawLine() {
+    this.ctx.beginPath();
+    this.ctx.moveTo(this._dialXOrigin - this.amplitude, this.y);
+    this.ctx.lineTo(this._dialXOrigin + this.amplitude, this.y);
+    this.ctx.strokeStyle = '#000000';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+  }
+
+  drawDial() {
+    this.ctx.beginPath();
+    this.ctx.moveTo(this._dialXPosition, this.y - 5);
+    this.ctx.lineTo(this._dialXPosition, this.y + 5);
+    this.ctx.strokeStyle = '#FF0000';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+  }
+
+  tick() {
+    this.t += TICK_IN_SEC;
+    this._dialXDelta = this._delta(this.t);
+    this._dialXPosition = this._dialXOrigin + this._dialXDelta;
+  }
+
+  _delta(t) {
+    return this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
+  }
+}
+
+class Pendulum1D {
+
+  constructor(scene, x, y, width, height, amplitude) {
+    this.scene = scene;
+    this.ctx = scene.ctx;
+    this.height = height;
+    this.width = width;
+    this.x = x;
+    this.y = y;
+
+    this.amplitude = amplitude;
+    this.frequency = 2 * Math.PI; // One 'cycle' per 1 second
+    this.phaseShift = HALF_PI; // Must be in radians
+
+    this.t = 0;
+    this._pendulumXOrigin = this.x + this.width / 2; 
+    this._pendulumYOrigin = this.y;
+    this._pendulumDelta = this._delta(this.t);
+    this._prevPendulumX =
+      this._pendulumX = this._pendulumXOrigin + this._pendulumDelta.dx;
+    this._prevPendulumY =
+      this._pendulumY = this._pendulumYOrigin + this._pendulumDelta.dy;
+    
+    this._lastRender = 0;
 
     scene.addObject(this);
   }
@@ -140,85 +229,14 @@ class PendulumDial {
 
   draw() {
     this.drawLine();
-    this.drawDial();
-  }
-
-  drawLine() {
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.x, this.y);
-    this.ctx.lineTo(this.x + this.width, this.y);
-    this.ctx.strokeStyle = '#000000';
-    this.ctx.lineWidth = 1;
-    // this.ctx.closePath();
-    this.ctx.stroke();
-  }
-
-  drawDial() {
-    this.ctx.beginPath();
-    this.ctx.moveTo(this._dialXPosition, this.y - 5);
-    this.ctx.lineTo(this._dialXPosition, this.y + 5);
-    this.ctx.strokeStyle = '#FF0000';
-    this.ctx.lineWidth = 2;
-    // this.ctx.closePath();
-    this.ctx.stroke();
-  }
-
-  tick() {
-    this.t += TICK_IN_SEC;
-    this._dialXDelta = this._delta(this.t);
-    this._dialXPosition = this._dialXOrigin + this._dialXDelta;
-  }
-
-  _delta(t) {
-    return this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
-  }
-}
-
-class Pendulum1D {
-
-  constructor(scene, x, y, width, height, radius) {
-    this.scene = scene;
-    this.ctx = scene.ctx;
-    this.height = height;
-    this.width = width;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-
-    this.amplitude = width / 2;
-    this.frequency = 2 * Math.PI; // One 'cycle' per 4 seconds
-    this.phaseShift = HALF_PI; // Must be in radians
-
-    this.t = 0;
-    this._pendulumXOrigin = this.x + this.width / 2; 
-    this._pendulumYOrigin = this.y;
-    this._pendulumDelta = this._delta(this.t);
-    this._prevPendulumX =
-      this._pendulumX = this._pendulumXOrigin + this._pendulumDelta.dx;
-    this._prevPendulumY =
-      this._pendulumY = this._pendulumYOrigin + this._pendulumDelta.dy;
-    
-    this._lastRender = 0;
-
-    scene.addObject(this);
-  }
-
-  draw() {
-    this.resetCanvas();
-    this.drawLine();
     this.drawHalfCircle();
     this.drawPendulum();
   }
 
-  resetCanvas() {
-    // this.ctx.fillStyle = 'red';
-
-  }
-
   drawLine() {
     this.ctx.beginPath();
-    this.ctx.moveTo(this.x, this.y);
-    this.ctx.lineTo(this.x + this.width, this.y);
+    this.ctx.moveTo(this._pendulumXOrigin - this.amplitude, this.y);
+    this.ctx.lineTo(this._pendulumXOrigin + this.amplitude, this.y);
     this.ctx.strokeStyle = '#000000';
     this.ctx.lineWidth = 1;
     this.ctx.stroke();
@@ -244,11 +262,7 @@ class Pendulum1D {
   }
 
   tick() {
-    // if (this._lastRender) {
-    //   this.t += (performance.now() - this._lastRender) / 1000;
-    // } else {
-      this.t += TICK_IN_SEC;
-    // }
+    this.t += TICK_IN_SEC;
 
     const {dx, dy} = this._delta(this.t);
 
@@ -257,12 +271,6 @@ class Pendulum1D {
 
     this._pendulumX = this._pendulumXOrigin + dx;
     this._pendulumY = this._pendulumYOrigin + dy;
-    
-    // console.log(Math.abs(this._pendulumX - this._prevPendulumX));
-
-    // this._lastRender = performance.now();
-
-    // console.log(Math.abs(this._pendulumX - this._prevPendulumX));
   }
 
   _delta(t) {
@@ -283,13 +291,28 @@ class UnitCircle {
     this.y = y;
 
     this.radius = radius;
-    this.frequency = 2 * Math.PI; // One 'cycle' per 4 seconds
+    this.frequency = 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = HALF_PI; // must be in radians
 
     this.t = 0;
     this._dialCoordinateDelta = this._delta(this.t);
 
     scene.addObject(this);
+  }
+
+  setAmplitude(amplitude) {
+    this.radius = amplitude;
+    return this;
+  }
+
+  setFrequency(frequency) {
+    this.frequency = frequency;
+    return this;
+  }
+
+  setPhaseShift(phaseShift) {
+    this.phaseShift = phaseShift;
+    return this;
   }
 
   draw() {
@@ -310,12 +333,10 @@ class UnitCircle {
 
     this.ctx.beginPath(); 
     this.ctx.arc(this.x, this.y, 1, 0, TWO_PI);
-    // this.ctx.closePath();
     this.ctx.fill();
 
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
-    // this.ctx.closePath();
     this.ctx.stroke();
   }
 
@@ -325,7 +346,6 @@ class UnitCircle {
     this.ctx.beginPath();
     this.ctx.fillStyle = '#FF0000';
     this.ctx.arc(this.x + x, this.y - y, 2, 0, TWO_PI);
-    // this.ctx.closePath();
     this.ctx.fill();
   }
 
@@ -338,7 +358,6 @@ class UnitCircle {
     this.ctx.beginPath();
     this.ctx.moveTo(this.x + x, this.y);
     this.ctx.lineTo(this.x + x, this.y - y);
-    // this.ctx.closePath();
     this.ctx.stroke();
   }
 
@@ -371,7 +390,7 @@ class SineWave {
 
     this.amplitude = amplitude; 
     this.radius = amplitude;
-    this.frequency = 2 * Math.PI; // One 'cycle' per 4 seconds
+    this.frequency = 2 * Math.PI; // One 'cycle' per second
     this.phaseShift = HALF_PI;
 
     this.t = 0;
@@ -380,13 +399,27 @@ class SineWave {
     scene.addObject(this);
   }
 
+  setAmplitude(amplitude) {
+    this.amplitude = amplitude;
+    this._steps = [];
+    return this;
+  }
+
+  setFrequency(frequency) {
+    this.frequency = frequency;
+    this._steps = [];
+    return this;
+  }
+
+  setPhaseShift(phaseShift) {
+    this.phaseShift = phaseShift;
+    this._steps = [];
+    return this;
+  }
+
   tick() {
     this.t += TICK_IN_SEC;
     this._steps.push(this._computeStepY());
-
-    // if (this._steps > 1000) {
-    //   this._steps = this.steps.slice(this.;
-    // } 
   }
 
   draw() {
@@ -447,4 +480,3 @@ class SineWave {
     return this.amplitude * Math.sin(this.frequency * this.t + this.phaseShift);
   }
 }
-
