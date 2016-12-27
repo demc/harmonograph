@@ -18,19 +18,23 @@
         border: 1px solid black;
       }
 
-      label {
+      .field-label {
         display: inline-block;
         width: 175px;
       }
 
       input {
-        width: 40px;
+        /*width: 40px;*/
       }
 
       ul {
         list-style: none;
         margin: 0;
         padding: 0;
+      }
+
+      li {
+        display: block;
       }
 
     </style>
@@ -42,19 +46,38 @@
 
     <ul>
       <li>
-        <label for="frequency">Frequency (radians)</label>
-        <input type="number" id="frequency" step="0.25" value="1.0" />
+        <label class="field-label" for="frequency">Frequency (radians)</label>
+        <span class="slider">
+          <label>0.0</label>
+          <input type="range" id="frequency" step="0.25" min="0.0" max="4" value="1.0" />
+          <label>4&pi;</label>
+        </span>
       </li>
       <li>
-        <label>Phase Shift (radians)</label>
-        <input type="number" id="phase-shift" step="0.25" value="0.5" />
+        <label class="field-label">Phase Shift (radians)</label>
+        <span class="slider">
+          <label>0.0</label>
+          <input type="range" id="phase-shift" step=".5" min="0.0" max="2" value="0.5" />
+          <label>2&pi;</label>
+        </span>
       </li>
       <li>
-        <label>Amplitude (pixels)</label>
-        <input type="number" id="amplitude" step="10" value="100" />
+        <label class="field-label">Amplitude (pixels)</label>
+        <span class="slider">
+          <label>10px</label>
+          <input type="range" id="amplitude" step="10" min="10" max="150" value="100" />
+          <label>150px</label>
       </li>
+      <li>
+        <label class="field-label">Damping Ratio</label>
+        <span class="slider">
+          <label>0.0</label>
+          <input type="range" id="damping" step="0.01" min="0.0" max="1" value="0" />
+          <label>1.0</label>
+        </span>
       <li>
         <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
       </li>
     </ul>
 
@@ -64,7 +87,7 @@
       let ctx = p.getContext('2d');
       let scene = new Scene(ctx, 400, 500);
       let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10, 100, Math.PI);
-      let penulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100, Math.PI);
+      let pendulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100, Math.PI);
       let unitCircle = new UnitCircle(scene, 200, 350, 100, Math.PI);
       let sineWave = new SineWave(scene, 20, 300, 180, 100, 100, Math.PI);
 
@@ -81,36 +104,62 @@
         }
       });
 
+      document.getElementById('reset').addEventListener('click', () => {
+        scene.reset();
+      });
+
       const frequencyInput = document.getElementById('frequency');
       const phaseShiftInput = document.getElementById('phase-shift');
       const amplitudeInput = document.getElementById('amplitude');
+      const dampingInput = document.getElementById('damping');
 
       frequencyInput.addEventListener(
         'input',
-        createInputHandler(
-          frequencyInput,
-          [pendulumDial, unitCircle, penulum1D, sineWave],
-          'setFrequency',
-          Math.PI
+        debounce(
+          createInputHandler(
+            frequencyInput,
+            [pendulumDial, unitCircle, pendulum1D, sineWave],
+            'setFrequency',
+            Math.PI
+          ),
+          100
         )
       );
 
       phaseShiftInput.addEventListener(
         'input',
-        createInputHandler(
-          phaseShiftInput,
-          [pendulumDial, unitCircle, penulum1D, sineWave],
-          'setPhaseShift',
-          Math.PI
+        debounce(
+          createInputHandler(
+            phaseShiftInput,
+            [pendulumDial, unitCircle, pendulum1D, sineWave],
+            'setPhaseShift',
+            Math.PI
+          ),
+          100
         )
       );
 
       amplitudeInput.addEventListener(
         'input',
-        createInputHandler(
-          amplitudeInput,
-          [pendulumDial, unitCircle, penulum1D, sineWave],
-          'setAmplitude'
+        debounce(
+          createInputHandler(
+            amplitudeInput,
+            [pendulumDial, unitCircle, pendulum1D, sineWave],
+            'setAmplitude'
+          ),
+          100
+        )
+      );
+
+      dampingInput.addEventListener(
+        'input',
+        debounce(
+          createInputHandler(
+            dampingInput,
+            [pendulumDial, pendulum1D, unitCircle, sineWave],
+            'setDampingRatio'
+          ),
+          100
         )
       );
 
@@ -127,6 +176,18 @@
             
             components.forEach(component => component[methodName](value));
           }
+        };
+      }
+
+      function debounce(fn, delay) {
+        let timer; 
+
+        return (e) => {
+          if (timer) {
+            clearTimeout(timer);
+          }
+
+          timer = setTimeout(fn.bind(this, e), delay);
         };
       }
     </script>

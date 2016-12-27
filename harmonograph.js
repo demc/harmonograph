@@ -83,11 +83,7 @@ class Scene {
   reset() {
     this.stop();
     tickCount = 0;
-
-    this.objects.forEach((obj) => {
-      obj.t = 0;
-    });
-
+    this.objects.forEach((obj) => obj.reset());
     this.start();
   }
 
@@ -125,6 +121,7 @@ class PendulumDial {
     this.amplitude = amplitude || width / 2;
     this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = phaseShift || HALF_PI; // Must be in radians
+    this.dampingRatio = 0;
 
     this.t = 0;
     this._dialXOrigin = this.x + this.width / 2; 
@@ -148,6 +145,15 @@ class PendulumDial {
   setPhaseShift(phaseShift) {
     this.phaseShift = phaseShift;
     return this;
+  }
+
+  setDampingRatio(dampingRatio) {
+    this.dampingRatio = dampingRatio;
+    return this;
+  }
+
+  reset() {
+    this.t = 0;
   }
 
   draw() {
@@ -180,7 +186,13 @@ class PendulumDial {
   }
 
   _delta(t) {
-    return this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
+    const position = this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
+
+    if (this.dampingRatio) {
+      return position * Math.pow(Math.E, -(this.dampingRatio * t));
+    }
+
+    return position;
   }
 }
 
@@ -197,6 +209,7 @@ class Pendulum1D {
     this.amplitude = amplitude;
     this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = HALF_PI; // Must be in radians
+    this.dampingRatio = 0;
 
     this.t = 0;
     this._pendulumXOrigin = this.x + this.width / 2; 
@@ -225,6 +238,15 @@ class Pendulum1D {
   setPhaseShift(phaseShift) {
     this.phaseShift = phaseShift;
     return this;
+  }
+  
+  setDampingRatio(dampingRatio) {
+    this.dampingRatio = dampingRatio;
+    return this;
+  }
+
+  reset() {
+    this.t = 0;
   }
 
   draw() {
@@ -257,7 +279,7 @@ class Pendulum1D {
     this.ctx.moveTo(this._pendulumXOrigin, this.y);
     this.ctx.lineTo(this._pendulumX, this._pendulumY);
     this.ctx.strokeStyle = '#FF0000';
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = 1.5;
     this.ctx.stroke();
   }
 
@@ -274,7 +296,12 @@ class Pendulum1D {
   }
 
   _delta(t) {
-    const dx = this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
+    let dx = this.amplitude * Math.sin(this.frequency * t + this.phaseShift);
+
+    if (this.dampingRatio) {
+      dx *= Math.pow(Math.E, -(this.dampingRatio * t));
+    }
+
     return {
       dx,
       dy: Math.sqrt(Math.pow(this.amplitude, 2) - Math.pow(dx, 2)),
@@ -293,6 +320,7 @@ class UnitCircle {
     this.radius = radius;
     this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
     this.phaseShift = HALF_PI; // must be in radians
+    this.dampingRatio = 0;
 
     this.t = 0;
     this._dialCoordinateDelta = this._delta(this.t);
@@ -315,11 +343,20 @@ class UnitCircle {
     return this;
   }
 
+  setDampingRatio(dampingRatio) {
+    this.dampingRatio = dampingRatio;
+    return this;
+  }
+
   draw() {
     this.drawCircle();
     this.drawY();
     this.drawDial();
     this.drawLegend();
+  }
+
+  reset() {
+    this.t = 0;
   }
 
   tick() {
@@ -335,8 +372,9 @@ class UnitCircle {
     this.ctx.arc(this.x, this.y, 1, 0, TWO_PI);
     this.ctx.fill();
 
+    const damping = this.dampingRatio ? Math.pow(Math.E, -(this.dampingRatio * this.t)) : 1;
     this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
+    this.ctx.arc(this.x, this.y, this.radius * damping, 0, TWO_PI);
     this.ctx.stroke();
   }
 
@@ -352,7 +390,7 @@ class UnitCircle {
   drawY() {
     const {x, y} = this._dialCoordinateDelta;
 
-    this.ctx.lineWidth = 2;
+    this.ctx.lineWidth = 1.5;
     this.ctx.strokeStyle = '#0000FF';
 
     this.ctx.beginPath();
@@ -362,18 +400,28 @@ class UnitCircle {
   }
 
   drawLegend() {
+    const damping = this.dampingRatio ? Math.pow(Math.E, -(this.dampingRatio * this.t)) : 1;
     this.ctx.fillStyle = '#000000'; 
     this.ctx.lineWidth = 1;
     this.ctx.font = '12px sans-serif';
-    this.ctx.fillText('0', this.x + this.radius + 5, this.y + 5);
-    this.ctx.fillText('𝜋 / 2', this.x - 10, this.y - this.radius - 5);
-    this.ctx.fillText('𝜋', this.x - this.radius - 12, this.y + 5);
-    this.ctx.fillText('3𝜋 / 2', this.x - 15, this.y + this.radius + 13);
+    this.ctx.fillText('0', this.x + this.radius * damping + 5, this.y + 5);
+    this.ctx.fillText('𝜋 / 2', this.x - 10, this.y - this.radius * damping - 5);
+    this.ctx.fillText('𝜋', this.x - this.radius * damping - 12, this.y + 5);
+    this.ctx.fillText('3𝜋 / 2', this.x - 15, this.y + this.radius * damping + 13);
   }
 
   _delta(t) {
     const x = this.radius * Math.cos(this.frequency * t + this.phaseShift);
     const y = this.radius * Math.sin(this.frequency * t + this.phaseShift);
+
+    if (this.dampingRatio) {
+      const damping = Math.pow(Math.E, -(this.dampingRatio * t));
+      return {
+        x: x * damping,
+        y: y * damping,
+      };
+    }
+
     return {x, y};
   }
 }
@@ -391,6 +439,7 @@ class SineWave {
     this.amplitude = amplitude;
     this.frequency = frequency || 2 * Math.PI; // One 'cycle' per second
     this.phaseShift = HALF_PI;
+    this.dampingRatio = 0;
 
     this.t = 0;
     this._steps = [this._computeStepY()];
@@ -414,6 +463,16 @@ class SineWave {
     this.phaseShift = phaseShift;
     this._steps = [];
     return this;
+  }
+
+  setDampingRatio(dampingRatio) {
+    this.dampingRatio = dampingRatio;
+    return this;
+  }
+  
+  reset() {
+    this.t = 0;
+    this._steps = [];
   }
 
   tick() {
@@ -476,6 +535,12 @@ class SineWave {
   }
 
   _computeStepY() {
-    return this.amplitude * Math.sin(this.frequency * this.t + this.phaseShift);
+    let dy = this.amplitude * Math.sin(this.frequency * this.t + this.phaseShift);
+
+    if (this.dampingRatio) {
+      dy *= Math.pow(Math.E, -(this.dampingRatio * this.t));
+    }
+
+    return dy;
   }
 }
