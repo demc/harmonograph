@@ -36,25 +36,46 @@ class Helpers {
       ctx.scale(ratio, ratio);
     }
   }
+
+  static syncCanvas(content, canvas) {
+    canvas.height = content.offsetHeight;
+    canvas.width = content.offsetWidth;
+    canvas.style.height = content.offsetHeight + 'px';
+    canvas.style.width = content.offsetWidth + 'px';
+  }
 }
 
 class Scene {
 
-  constructor(ctx, width, height) {
+  constructor(container, ctx, width, height) {
+    this.container = container;
     this.ctx = ctx;
-    this.height = height;
-    this.width = width;
+    this.height = content.offsetHeight;
+    this.width = content.offsetWidth;
     this.objects = [];
     this.playing = false;
 
     this._timer = null;
 
+    Helpers.syncCanvas(content, ctx.canvas);
     Helpers.adjustPixelDisplayRadio(ctx);
+
+    window.addEventListener('resize', (e) => {
+      Helpers.syncCanvas(content, ctx.canvas);
+      Helpers.adjustPixelDisplayRadio(ctx);
+      this.resizeObjects();
+    });
   }
 
   addObject(obj) {
     this.objects.push(obj);
     return this;
+  }
+
+  resizeObjects() {
+ 
+    // TODO: resize objects based on container size
+    //   this.objects.forEach(obj => obj.handleContainerResize(this.width, this.heights));
   }
 
   start() {
