@@ -20,10 +20,13 @@ function getVisualizationState(content, canvas) {
     let ctx = canvas.getContext('2d');
     let scene = new Scene(content, ctx);
 
-    let pendulumDial = new PendulumDial(scene, 20, 25, 360, 10, 100, Math.PI);
-    let pendulum1D = new Pendulum1D(scene, 20, 50, 360, 180, 100, Math.PI);
-    let unitCircle = new UnitCircle(scene, 200, 350, 100, Math.PI);
-    let sineWave = new SineWave(scene, 20, 300, 180, 100, 100, Math.PI);
+    const xMidPoint = scene.width / 2;
+    const yMidPoint = scene.height / 2;
+
+    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 25, 360, 10, 100, Math.PI);
+    let pendulum1D = new Pendulum1D(scene, xMidPoint - 180, 50, 360, 180, 100, Math.PI);
+    let unitCircle = new UnitCircle(scene, xMidPoint, 350, 100, Math.PI);
+    let sineWave = new SineWave(scene, xMidPoint - 180, 300, 180, 100, 100, Math.PI);
 
     // TODO: resize objects based on container size
 
@@ -56,6 +59,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
   });
 
   document.getElementById('reset').addEventListener('click', () => {
+    pauseButton.textContent = 'Pause';
     scene.reset();
   });
 
