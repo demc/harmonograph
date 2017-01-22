@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <title>Two Dimensional Pendular Motion</title>
+    
+    <style>
+
+      html, body {
+        font-family: courier;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+
+      #sidebar {
+        background-color: #EEE;
+        bottom: 0;
+        left: 0;
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        width: 250px;
+      }
+
+      #content {
+        bottom: 0;
+        left: 270px;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
+      input {
+        /*width: 40px;*/
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        display: block;
+        padding: 5px;
+      }
+
+      li.field-label {
+        padding-bottom: 0;
+      }
+
+      .slider > label {
+        vertical-align: top;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="sidebar">
+      <a href="index.html">Back to Home</a>
+
+      <h1>Two Dimensional Pendular Motion</h1>
+
+      <ul class="sidebar-controls">
+        <li class="field-label"><label for="frequency-x">Frequency X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-x" step="0.25" min="0.0" max="4" value="1.0" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="frequency-y">Frequency Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-y" step="0.25" min="0.0" max="4" value="1.0" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-x">Phase Shift X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-x" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-y">Phase Shift Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-y" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="amplitude-x">Amplitude X (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-x" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="amplitude-y">Amplitude Y (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-y" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="damping-x">Damping Ratio X</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="damping-x" step="0.01" min="0.0" max="1" value="0" />
+            <label>1.0</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="damping-y">Damping Ratio Y</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="damping-y" step="0.01" min="0.0" max="1" value="0" />
+            <label>1.0</label>
+          </span>
+        </li>
+        <li>
+          <button id="pause">Pause</button>
+          <button id="reset">Reset</button>
+        </li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <canvas id="canvas" width="400" height="500"></canvas>
+    </div>
+
+    <script src="harmonograph.js"></script>
+    <script src="2d.js"></script>
+    <script>
+      function init() {
+        let content = document.getElementById('content');
+        let canvas = document.getElementById('canvas');
+        setupCanvas(content, canvas);
+      }
+
+      init();
+    </script>
+  </body>
+</html>
