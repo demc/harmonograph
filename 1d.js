@@ -1,3 +1,13 @@
+import Pendulum1D from './Pendulum1D';
+import PendulumDial from './PendulumDial';
+import Scene from './Scene';
+import SineWave from './SineWave';
+import UnitCircle from './UnitCircle';
+
+const content = document.getElementById('content');
+const canvas = document.getElementById('canvas');
+setupCanvas(content, canvas);
+
 function setupCanvas(content, canvas) {
   const {
     ctx,

@@ -1,3 +1,13 @@
+import Label from './Label';
+import Pendulum2D from './Pendulum2D';
+import PendulumDial from './PendulumDial';
+import Scene from './Scene';
+import UnitCircle from './UnitCircle';
+
+let content = document.getElementById('content');
+let canvas = document.getElementById('canvas');
+setupCanvas(content, canvas);
+
 function setupCanvas(content, canvas) {
   const {
     ctx,
