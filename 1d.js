@@ -10,7 +10,7 @@ function setupCanvas(content, canvas) {
 
   setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave);
 
-  scene.start();
+  scene.setClearBetweenFrames(true).start();
 }
 
 function getVisualizationState(content, canvas) {
@@ -23,7 +23,7 @@ function getVisualizationState(content, canvas) {
     const xMidPoint = scene.width / 2;
     const yMidPoint = scene.height / 2;
 
-    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 25, 360, 10, 100, Math.PI);
+    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 25, 360, 10, 'horizontal', 100, Math.PI);
     let pendulum1D = new Pendulum1D(scene, xMidPoint - 180, 50, 360, 180, 100, Math.PI);
     let unitCircle = new UnitCircle(scene, xMidPoint, 350, 100, Math.PI);
     let sineWave = new SineWave(scene, xMidPoint - 180, 300, 180, 100, 100, Math.PI);

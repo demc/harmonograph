@@ -2,13 +2,14 @@ function setupCanvas(content, canvas) {
   const {
     ctx,
     scene, 
-    pendulumDial,
-    pendulum1D,
-    unitCircle,
-    sineWave
+    pendulumDialX,
+    pendulumDialY,
+    pendulum2D,
+    unitCircleX,
+    unitCircleY
   } = getVisualizationState(content, canvas);
 
-  // setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave);
+  setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY);
 
   scene.start();
 }
@@ -23,20 +24,33 @@ function getVisualizationState(content, canvas) {
     const xMidPoint = scene.width / 2;
     const yMidPoint = scene.height / 2;
 
-    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 25, 360, 10, 100, Math.PI);
-    // let pendulum1D = new Pendulum1D(scene, xMidPoint - 180, 50, 360, 180, 100, Math.PI);
-    let unitCircle = new UnitCircle(scene, xMidPoint, 350, 100, Math.PI);
-    let sineWave = new SineWave(scene, xMidPoint - 180, 300, 180, 100, 100, Math.PI);
+    const amplitudeX = 100;
+    const amplitudeY = 50;
+
+    const x = xMidPoint - amplitudeX;
+    const y = yMidPoint - amplitudeY;
+
+    const width = amplitudeX * 2;
+    const height = amplitudeY * 2;
+
+    let pendulumDialX = new PendulumDial(scene, x, y - 20, width, 10, 'horizontal', amplitudeX, Math.PI);
+    let pendulumDialY = new PendulumDial(scene, x - 20, y, 10, height, 'vertical', amplitudeY, Math.PI, Math.PI);
+    let pendulum2D = new Pendulum2D(scene, x, y, width, height, amplitudeX, amplitudeY, Math.PI, Math.PI, Math.PI / 2, Math.PI);
+    let unitCircleX = new UnitCircle(scene, xMidPoint - 75, scene.height - 100, 40, Math.PI);
+    let unitCircleY = new UnitCircle(scene, xMidPoint + 75, scene.height - 100, 40, Math.PI, Math.PI);
+    let unitCircleXLabel = new Label(scene, xMidPoint - 75, scene.height - 25, 'X Component', 14, 'courier');
+    let unitCircleYLabel = new Label(scene, xMidPoint + 75, scene.height - 25, 'Y Component', 14, 'courier');
 
     // TODO: resize objects based on container size
 
     const state = {
       ctx,
       scene,
-      pendulumDial,
-      pendulum1D,
-      unitCircle,
-      sineWave
+      pendulumDialX,
+      pendulumDialY,
+      pendulum2D,
+      unitCircleX,
+      unitCircleY
     };
 
     canvas._state = state;
@@ -45,7 +59,9 @@ function getVisualizationState(content, canvas) {
   }
 }
 
-function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave) {
+function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY) {
+  const xMidPoint = scene.width / 2;
+  const yMidPoint = scene.height / 2;
 
   const pauseButton = document.getElementById('pause');
   pauseButton.addEventListener('click', (e) => {
@@ -63,17 +79,22 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     scene.reset();
   });
 
-  const frequencyInput = document.getElementById('frequency');
-  const phaseShiftInput = document.getElementById('phase-shift');
-  const amplitudeInput = document.getElementById('amplitude');
+  const amplitudeXInput = document.getElementById('amplitude-x');
+  const amplitudeYInput = document.getElementById('amplitude-y');
+  const frequencyXInput = document.getElementById('frequency-x');
+  const frequencyYInput = document.getElementById('frequency-y');
+  const phaseShiftXInput = document.getElementById('phase-shift-x');
+  const phaseShiftYInput = document.getElementById('phase-shift-y');
   const dampingInput = document.getElementById('damping');
 
-  frequencyInput.addEventListener(
+  // TODO: set x/y for Pendulum2D
+
+  frequencyXInput.addEventListener(
     'input',
     debounce(
       createInputHandler(
-        frequencyInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        frequencyXInput,
+        [pendulumDialX, unitCircleX],
         'setFrequency',
         Math.PI
       ),
@@ -81,12 +102,51 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     )
   );
 
-  phaseShiftInput.addEventListener(
+  frequencyXInput.addEventListener(
     'input',
     debounce(
       createInputHandler(
-        phaseShiftInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        frequencyXInput,
+        [pendulum2D],
+        'setFrequencyX',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  frequencyYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        frequencyYInput,
+        [pendulumDialY, unitCircleY],
+        'setFrequency',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  frequencyYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        frequencyYInput,
+        [pendulum2D],
+        'setFrequencyY',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  phaseShiftXInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        phaseShiftXInput,
+        [pendulumDialX, unitCircleX],
         'setPhaseShift',
         Math.PI
       ),
@@ -94,14 +154,117 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     )
   );
 
-  amplitudeInput.addEventListener(
+  phaseShiftXInput.addEventListener(
     'input',
     debounce(
       createInputHandler(
-        amplitudeInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        phaseShiftXInput,
+        [pendulum2D],
+        'setPhaseShiftX',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  phaseShiftYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        phaseShiftYInput,
+        [pendulumDialY, unitCircleY],
+        'setPhaseShift',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  phaseShiftYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        phaseShiftYInput,
+        [pendulum2D],
+        'setPhaseShiftY',
+        Math.PI
+      ),
+      100
+    )
+  );
+
+  amplitudeXInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        amplitudeXInput,
+        [pendulumDialX],
         'setAmplitude'
       ),
+      100
+    )
+  );
+
+  amplitudeXInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        amplitudeXInput,
+        [pendulum2D],
+        'setAmplitudeX'
+      ),
+      100
+    )
+  );
+
+  amplitudeXInput.addEventListener(
+    'input',
+    debounce(
+      (e) => {
+        const value = parseFloat(e.target.value);
+
+        if (isFinite(value)) {
+          pendulumDialY.setX(xMidPoint - value - 20);
+        }
+      },
+      100
+    )
+  );
+
+  amplitudeYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        amplitudeYInput,
+        [pendulumDialY],
+        'setAmplitude'
+      ),
+      100
+    )
+  );
+
+  amplitudeYInput.addEventListener(
+    'input',
+    debounce(
+      createInputHandler(
+        amplitudeYInput,
+        [pendulum2D],
+        'setAmplitudeY'
+      ),
+      100
+    )
+  );
+
+  amplitudeYInput.addEventListener(
+    'input',
+    debounce(
+      (e) => {
+        const value = parseFloat(e.target.value);
+
+        if (isFinite(value)) {
+          pendulumDialX.setY(yMidPoint - value - 20);
+        }
+      },
       100
     )
   );
@@ -111,7 +274,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     debounce(
       createInputHandler(
         dampingInput,
-        [pendulumDial, pendulum1D, unitCircle, sineWave],
+        [pendulum2D, pendulumDialX, pendulumDialY],
         'setDampingRatio'
       ),
       100
@@ -123,13 +286,13 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
       let value = parseFloat(e.target.value);
 
       if (isFinite(value)) {
-        scene.reset();
-
         if (isFinite(multiplier)) {
           value = value * multiplier;
         }
         
         components.forEach(component => component[methodName](value));
+
+        scene.reset();
       }
     };
   }
