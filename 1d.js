@@ -38,10 +38,10 @@ function getVisualizationState(content, canvas, formulaNode, formulaValuesNode) 
     const xMidPoint = scene.width / 2;
     const yMidPoint = scene.height / 2;
 
-    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 25, 360, 10, 'horizontal', 100, Math.PI);
-    let pendulum1D = new Pendulum1D(scene, xMidPoint - 180, 50, 360, 180, 100, Math.PI);
-    let unitCircle = new UnitCircle(scene, xMidPoint, 350, 100, Math.PI);
-    let sineWave = new SineWave(scene, xMidPoint - 180, 300, 180, 100, 100, Math.PI);
+    let pendulumDial = new PendulumDial(scene, xMidPoint - 180, 100, 360, 10, 'horizontal', 100, Math.PI);
+    let pendulum1D = new Pendulum1D(scene, xMidPoint - 180, 125, 360, 180, 100, Math.PI);
+    let unitCircle = new UnitCircle(scene, xMidPoint, 425, 100, Math.PI);
+    let sineWave = new SineWave(scene, xMidPoint - 180, 375, 180, 100, 100, Math.PI);
 
     // TODO: resize objects based on container size
 
@@ -130,7 +130,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     debounce(
       createInputHandler(
         dampingInput,
-        [pendulumDial, pendulum1D, unitCircle, sineWave],
+        [pendulumDial, pendulum1D, unitCircle, sineWave, formula1D],
         'setDampingRatio'
       ),
       100

@@ -104,10 +104,10 @@
 	    var xMidPoint = scene.width / 2;
 	    var yMidPoint = scene.height / 2;
 
-	    var pendulumDial = new _PendulumDial2.default(scene, xMidPoint - 180, 25, 360, 10, 'horizontal', 100, Math.PI);
-	    var pendulum1D = new _Pendulum1D2.default(scene, xMidPoint - 180, 50, 360, 180, 100, Math.PI);
-	    var unitCircle = new _UnitCircle2.default(scene, xMidPoint, 350, 100, Math.PI);
-	    var sineWave = new _SineWave2.default(scene, xMidPoint - 180, 300, 180, 100, 100, Math.PI);
+	    var pendulumDial = new _PendulumDial2.default(scene, xMidPoint - 180, 100, 360, 10, 'horizontal', 100, Math.PI);
+	    var pendulum1D = new _Pendulum1D2.default(scene, xMidPoint - 180, 125, 360, 180, 100, Math.PI);
+	    var unitCircle = new _UnitCircle2.default(scene, xMidPoint, 425, 100, Math.PI);
+	    var sineWave = new _SineWave2.default(scene, xMidPoint - 180, 375, 180, 100, 100, Math.PI);
 
 	    // TODO: resize objects based on container size
 
@@ -159,7 +159,7 @@
 
 	  amplitudeInput.addEventListener('input', debounce(createInputHandler(amplitudeInput, [pendulumDial, unitCircle, pendulum1D, sineWave, formula1D], 'setAmplitude'), 100));
 
-	  dampingInput.addEventListener('input', debounce(createInputHandler(dampingInput, [pendulumDial, pendulum1D, unitCircle, sineWave], 'setDampingRatio'), 100));
+	  dampingInput.addEventListener('input', debounce(createInputHandler(dampingInput, [pendulumDial, pendulum1D, unitCircle, sineWave, formula1D], 'setDampingRatio'), 100));
 
 	  function createInputHandler(input, components, methodName, multiplier) {
 	    return function (e) {
@@ -611,6 +611,7 @@
 	}
 
 	var FORMULA = 'x = A \\cdot\\sin(f \\cdot t + p)';
+	var FORMULA_DAMPING = 'x = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
 
 	var Formula1D = function () {
 		function Formula1D(formulaNode, formulaValuesNode, variable, amplitude, frequency, phaseShift) {
@@ -660,9 +661,9 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				_katex2.default.render(FORMULA, this.formulaNode);
+				_katex2.default.render(this.dampingRatio ? FORMULA_DAMPING : FORMULA, this.formulaNode);
 
-				_katex2.default.render(this.variable + ' = ' + this.amplitude + ' \\cdot\\sin(' + radian_to_tex(this.frequencyMultiplier) + '\\cdot t + ' + radian_to_tex(this.phaseShiftMultiplier) + ')', this.formulaValuesNode);
+				_katex2.default.render(this.variable + ' = ' + this.amplitude + ' \\cdot\\sin(' + radian_to_tex(this.frequencyMultiplier) + '\\cdot t + ' + radian_to_tex(this.phaseShiftMultiplier) + ')' + (this.dampingRatio ? '\\cdot e^{' + this.dampingRatio + 't}' : ''), this.formulaValuesNode);
 			}
 		}]);
 
