@@ -1,29 +1,34 @@
 import Pendulum1D from './Pendulum1D';
 import PendulumDial from './PendulumDial';
+import Formula1D from './Formula1D';
 import FullScreenScene from './FullScreenScene';
 import SineWave from './SineWave';
 import UnitCircle from './UnitCircle';
 
 const content = document.getElementById('content');
 const canvas = document.getElementById('canvas');
-setupCanvas(content, canvas);
+const formula = document.getElementById('formula');
+const formulaValues = document.getElementById('formula-values');
 
-function setupCanvas(content, canvas) {
+setupCanvas(content, canvas, formula, formulaValues);
+
+function setupCanvas(content, canvas, formula, formulaValues) {
   const {
     ctx,
     scene, 
     pendulumDial,
     pendulum1D,
     unitCircle,
-    sineWave
-  } = getVisualizationState(content, canvas);
+    sineWave,
+    formula1D
+  } = getVisualizationState(content, canvas, formula, formulaValues);
 
-  setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave);
+  setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave, formula1D);
 
   scene.setClearBetweenFrames(true).start();
 }
 
-function getVisualizationState(content, canvas) {
+function getVisualizationState(content, canvas, formulaNode, formulaValuesNode) {
   if (canvas._state) {
     return canvas._state;
   } else {
@@ -40,13 +45,17 @@ function getVisualizationState(content, canvas) {
 
     // TODO: resize objects based on container size
 
+    let formula1D = new Formula1D(formulaNode, formulaValuesNode, 'x', 100, Math.PI, Math.PI / 2);
+    formula1D.render();
+
     const state = {
       ctx,
       scene,
       pendulumDial,
       pendulum1D,
       unitCircle,
-      sineWave
+      sineWave,
+      formula1D
     };
 
     canvas._state = state;
@@ -55,7 +64,7 @@ function getVisualizationState(content, canvas) {
   }
 }
 
-function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave) {
+function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, sineWave, formula1D) {
 
   const pauseButton = document.getElementById('pause');
   pauseButton.addEventListener('click', (e) => {
@@ -83,7 +92,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     debounce(
       createInputHandler(
         frequencyInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        [pendulumDial, unitCircle, pendulum1D, sineWave, formula1D],
         'setFrequency',
         Math.PI
       ),
@@ -96,7 +105,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     debounce(
       createInputHandler(
         phaseShiftInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        [pendulumDial, unitCircle, pendulum1D, sineWave, formula1D],
         'setPhaseShift',
         Math.PI
       ),
@@ -109,7 +118,7 @@ function setupInputHandlers(ctx, scene, pendulumDial, pendulum1D, unitCircle, si
     debounce(
       createInputHandler(
         amplitudeInput,
-        [pendulumDial, unitCircle, pendulum1D, sineWave],
+        [pendulumDial, unitCircle, pendulum1D, sineWave, formula1D],
         'setAmplitude'
       ),
       100
