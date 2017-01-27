@@ -7,8 +7,8 @@ class Scene {
   constructor(container, ctx, width, height) {
     this.container = container;
     this.ctx = ctx;
-    this.height = content.offsetHeight;
-    this.width = content.offsetWidth;
+    this.height = width;
+    this.width = height;
     this.objects = [];
     this.playing = false;
     this.clearBetweenFrames = false;
@@ -16,25 +16,12 @@ class Scene {
 
     this._timer = null;
 
-    Helpers.syncCanvas(content, ctx.canvas);
     Helpers.adjustPixelDisplayRadio(ctx);
-
-    window.addEventListener('resize', (e) => {
-      Helpers.syncCanvas(content, ctx.canvas);
-      Helpers.adjustPixelDisplayRadio(ctx);
-      this.resizeObjects();
-    });
   }
 
   addObject(obj) {
     this.objects.push(obj);
     return this;
-  }
-
-  resizeObjects() {
- 
-    // TODO: resize objects based on container size
-    //   this.objects.forEach(obj => obj.handleContainerResize(this.width, this.heights));
   }
 
   setClearBetweenFrames(clearBetweenFrames) {

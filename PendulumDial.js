@@ -33,6 +33,10 @@ class PendulumDial {
     scene.addObject(this);
   }
 
+  getAbsolutePosition() {
+    return this.orientation === HORIZONTAL ? this._dialXPosition : this._dialYPosition;
+  }
+
   setX(x) {
     this.x = x;
 
@@ -94,6 +98,7 @@ class PendulumDial {
 
   reset() {
     this.t = 0;
+    this.update();
   }
 
   clear() {
@@ -139,7 +144,10 @@ class PendulumDial {
 
   tick() {
     this.t += TICK_IN_SEC;
+    this.update();
+  }
 
+  update() {
     if (this.orientation === HORIZONTAL) {
       this._dialXDelta = this._delta(this.t);
       this._dialXPosition = this._dialXOrigin + this._dialXDelta;

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <title>Rotary Harmonograph</title>
+    
+    <style>
+
+      html, body {
+        font-family: courier;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+
+      #sidebar {
+        background-color: #EEE;
+        bottom: 0;
+        left: 0;
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        width: 250px;
+      }
+
+      #content {
+        bottom: 0;
+        left: 270px;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+      #rotary {
+        border: 1px solid black;
+        position: absolute;
+        top: 0;
+        z-index: 99;
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
+      input {
+        /*width: 40px;*/
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        display: block;
+        padding: 5px;
+      }
+
+      li.field-label {
+        padding-bottom: 0;
+      }
+
+      .slider > label {
+        vertical-align: top;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="sidebar">
+      <a href="index.html">Back to Home</a>
+
+      <h1>Rotary Harmonograph</h1>
+
+      <ul class="sidebar-controls">
+        <li class="field-label"><label for="frequency-x">Frequency X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-x" step="0.25" min="0.0" max="4" value="1.0" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="frequency-y">Frequency Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-y" step="0.25" min="0.0" max="4" value="1.0" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-x">Phase Shift X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-x" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-y">Phase Shift Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-y" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="amplitude-x">Amplitude X (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-x" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="amplitude-y">Amplitude Y (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-y" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="rotary-radius">Rotary Radius (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>0px</label>
+            <input type="range" id="rotary-radius" step="5" min="0" max="50" value="50" />
+            <label>50px</label>
+        </li>
+        <li class="field-label"><label for="damping">Damping Ratio</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="damping" step="0.005" min="0.0" max="0.1" value="0" />
+            <label>0.1</label>
+          </span>
+        </li>
+        <li>
+          <button id="pause">Pause</button>
+          <button id="reset">Reset</button>
+        </li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <canvas id="canvas" width="400" height="500"></canvas>
+      <canvas id="rotary" width="300" height="300"></canvas>
+    </div>
+
+    <script src="rotary-harmonograph.bundle.js"></script>
+  </body>
+</html>

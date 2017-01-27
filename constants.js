@@ -1,4 +1,4 @@
-export const TIMEOUT = 1000 / 60; //500
+export const TIMEOUT = 1000 / 60;
 export const TICK_IN_SEC = TIMEOUT / 1000;
 export const MAX_TICK = 100000;
 

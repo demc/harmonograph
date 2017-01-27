@@ -3,16 +3,14 @@ var path = require('path');
 const config = {
   entry: {
     '1d': './1d',
-    '2d': './2d'
+    '2d': './2d',
+    'rotary-harmonograph': './rotary-harmonograph'
   },
   output: {
     path: __dirname,
     filename: '[name].bundle.js'
   },
   module: {
-    // rules: [
-    //   {test: /\.(js|jsx)$/, use: 'babel-loader'}
-    // ],
     loaders: [
       {
         test: /\.js$/,

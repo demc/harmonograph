@@ -1,6 +1,6 @@
 import Pendulum1D from './Pendulum1D';
 import PendulumDial from './PendulumDial';
-import Scene from './Scene';
+import FullScreenScene from './FullScreenScene';
 import SineWave from './SineWave';
 import UnitCircle from './UnitCircle';
 
@@ -28,7 +28,7 @@ function getVisualizationState(content, canvas) {
     return canvas._state;
   } else {
     let ctx = canvas.getContext('2d');
-    let scene = new Scene(content, ctx);
+    let scene = new FullScreenScene(content, ctx);
 
     const xMidPoint = scene.width / 2;
     const yMidPoint = scene.height / 2;

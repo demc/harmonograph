@@ -1,92 +1,111 @@
-import Label from './Label';
-import Pendulum2D from './Pendulum2D';
-import PendulumDial from './PendulumDial';
+import AbsoluteScene from './AbsoluteScene';
+import Cursor2D from './Cursor2D';
 import FullScreenScene from './FullScreenScene';
-import UnitCircle from './UnitCircle';
+import PendulumDial from './PendulumDial';
+import RotaryHarmonograph from './RotaryHarmonograph';
 
-let content = document.getElementById('content');
-let canvas = document.getElementById('canvas');
-setupCanvas(content, canvas);
+import {HALF_PI} from './constants';
 
-function setupCanvas(content, canvas) {
+const content = document.getElementById('content');
+const fullScreenCanvas = document.getElementById('canvas');
+const rotaryCanvas = document.getElementById('rotary');
+
+setupCanvas(content, fullScreenCanvas, rotaryCanvas);
+
+function setupCanvas(content, fullScreenCanvas, rotaryCanvas) {
   const {
-    ctx,
-    scene, 
+    fsScene,
+    rScene,
     pendulumDialX,
     pendulumDialY,
-    pendulum2D,
-    unitCircleX,
-    unitCircleY
-  } = getVisualizationState(content, canvas);
+    cursor,
+    rotaryHarmonograph
+  } = getVisualizationState(content, fullScreenCanvas, rotaryCanvas);
 
-  setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY);
+  setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph);
 
-  scene.start();
+  fsScene.start();
+  rScene.start();
 }
 
-function getVisualizationState(content, canvas) {
-  if (canvas._state) {
-    return canvas._state;
-  } else {
-    let ctx = canvas.getContext('2d');
-    let scene = new FullScreenScene(content, ctx);
+function getVisualizationState(content, fullScreenCanvas, rotaryCanvas) {
+  const fsScene = new FullScreenScene(content, fullScreenCanvas.getContext('2d'));
 
-    const xMidPoint = scene.width / 2;
-    const yMidPoint = scene.height / 2;
+  const screenWidth = fsScene.width;
+  const screenHeight= fsScene.height;
 
-    const amplitudeX = 100;
-    const amplitudeY = 50;
+  const xMidpoint = screenWidth / 2;
+  const yMidpoint = screenHeight / 2;
 
-    const x = xMidPoint - amplitudeX;
-    const y = yMidPoint - amplitudeY;
+  const x = xMidpoint - 150;
+  const y = yMidpoint - 150;
 
-    const width = amplitudeX * 2;
-    const height = amplitudeY * 2;
+  const radius = 50;
+  
+  const amplitudeX = 150;
+  const amplitudeY = 150;
 
-    let pendulumDialX = new PendulumDial(scene, x, y - 20, width, 10, 'horizontal', amplitudeX, Math.PI);
-    let pendulumDialY = new PendulumDial(scene, x - 20, y, 10, height, 'vertical', amplitudeY, Math.PI, Math.PI);
-    let pendulum2D = new Pendulum2D(scene, x, y, width, height, amplitudeX, amplitudeY, Math.PI, Math.PI, Math.PI / 2, Math.PI);
-    let unitCircleX = new UnitCircle(scene, xMidPoint - 75, scene.height - 100, 40, Math.PI);
-    let unitCircleY = new UnitCircle(scene, xMidPoint + 75, scene.height - 100, 40, Math.PI, Math.PI);
-    let unitCircleXLabel = new Label(scene, xMidPoint - 75, scene.height - 25, 'X Component', 14, 'courier');
-    let unitCircleYLabel = new Label(scene, xMidPoint + 75, scene.height - 25, 'Y Component', 14, 'courier');
+  const width = amplitudeX * 2;
+  const height = amplitudeY * 2;
 
-    // TODO: resize objects based on container size
+  const frequencyX = HALF_PI;
+  const frequencyY = HALF_PI;
 
-    const state = {
-      ctx,
-      scene,
-      pendulumDialX,
-      pendulumDialY,
-      pendulum2D,
-      unitCircleX,
-      unitCircleY
-    };
+  const rScene = new AbsoluteScene(content, rotaryCanvas.getContext('2d'), x, y, width, height, radius, Math.PI / 2);
+  rScene.setPosition(x, y);
 
-    canvas._state = state;
+  let pendulumDialX = new PendulumDial(fsScene, x, y - 20, width, 10, 'horizontal', amplitudeX - radius, Math.PI / 2);
+  let pendulumDialY = new PendulumDial(fsScene, x - 20, y, 10, height, 'vertical', amplitudeY - radius, Math.PI / 2, Math.PI);
+  let cursor = new Cursor2D(fsScene, x, y, width, height, 2, 'red', amplitudeX - radius, amplitudeY - radius, frequencyX, frequencyY, undefined, Math.PI);
 
-    return state;
-  }
+  let rotaryHarmonograph = new RotaryHarmonograph(
+    rScene,
+    x,
+    y,
+    width,
+    height,
+    () => {
+      let absoluteX = pendulumDialX.getAbsolutePosition();
+      let absoluteY = pendulumDialY.getAbsolutePosition();
+
+      let relativeX = absoluteX - x;
+      let relativeY = absoluteY - y;
+
+      const {x: offsetX, y: offsetY} = rScene.getOffsets();
+
+      return {x: relativeX - offsetX, y: relativeY - offsetY};
+    }
+  );
+
+  return {
+    fsScene,
+    rScene,
+    pendulumDialX,
+    pendulumDialY,
+    cursor,
+    rotaryHarmonograph
+  };
 }
 
-function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY) {
-  const xMidPoint = scene.width / 2;
-  const yMidPoint = scene.height / 2;
+function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph) {
 
   const pauseButton = document.getElementById('pause');
   pauseButton.addEventListener('click', (e) => {
-    if (scene.playing) {
-      scene.stop();
+    if (fsScene.playing) {
+      fsScene.stop();
+      rScene.stop();
       pauseButton.textContent = 'Resume';
     } else {
-      scene.start();
+      fsScene.start();
+      rScene.start();
       pauseButton.textContent = 'Pause';
     }
   });
-
+  
   document.getElementById('reset').addEventListener('click', () => {
     pauseButton.textContent = 'Pause';
-    scene.reset();
+    fsScene.reset();
+    rScene.reset();
   });
 
   const amplitudeXInput = document.getElementById('amplitude-x');
@@ -95,16 +114,15 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
   const frequencyYInput = document.getElementById('frequency-y');
   const phaseShiftXInput = document.getElementById('phase-shift-x');
   const phaseShiftYInput = document.getElementById('phase-shift-y');
+  const rotaryRadiusInput = document.getElementById('rotary-radius');
   const dampingInput = document.getElementById('damping');
-
-  // TODO: set x/y for Pendulum2D
 
   frequencyXInput.addEventListener(
     'input',
     debounce(
       createInputHandler(
         frequencyXInput,
-        [pendulumDialX, unitCircleX],
+        [pendulumDialX],
         'setFrequency',
         Math.PI
       ),
@@ -117,7 +135,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         frequencyXInput,
-        [pendulum2D],
+        [cursor],
         'setFrequencyX',
         Math.PI
       ),
@@ -130,7 +148,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         frequencyYInput,
-        [pendulumDialY, unitCircleY],
+        [pendulumDialY],
         'setFrequency',
         Math.PI
       ),
@@ -143,7 +161,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         frequencyYInput,
-        [pendulum2D],
+        [cursor],
         'setFrequencyY',
         Math.PI
       ),
@@ -156,7 +174,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftXInput,
-        [pendulumDialX, unitCircleX],
+        [pendulumDialX],
         'setPhaseShift',
         Math.PI
       ),
@@ -169,7 +187,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftXInput,
-        [pendulum2D],
+        [cursor],
         'setPhaseShiftX',
         Math.PI
       ),
@@ -182,7 +200,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftYInput,
-        [pendulumDialY, unitCircleY],
+        [pendulumDialY],
         'setPhaseShift',
         Math.PI
       ),
@@ -195,7 +213,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftYInput,
-        [pendulum2D],
+        [cursor],
         'setPhaseShiftY',
         Math.PI
       ),
@@ -220,23 +238,9 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         amplitudeXInput,
-        [pendulum2D],
+        [cursor],
         'setAmplitudeX'
       ),
-      100
-    )
-  );
-
-  amplitudeXInput.addEventListener(
-    'input',
-    debounce(
-      (e) => {
-        const value = parseFloat(e.target.value);
-
-        if (isFinite(value)) {
-          pendulumDialY.setX(xMidPoint - value - 20);
-        }
-      },
       100
     )
   );
@@ -258,23 +262,21 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         amplitudeYInput,
-        [pendulum2D],
+        [cursor],
         'setAmplitudeY'
       ),
       100
     )
   );
 
-  amplitudeYInput.addEventListener(
+  rotaryRadiusInput.addEventListener(
     'input',
     debounce(
-      (e) => {
-        const value = parseFloat(e.target.value);
-
-        if (isFinite(value)) {
-          pendulumDialX.setY(yMidPoint - value - 20);
-        }
-      },
+      createInputHandler(
+        rotaryRadiusInput,
+        [rScene, cursor],
+        'setRadius'
+      ),
       100
     )
   );
@@ -284,7 +286,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         dampingInput,
-        [pendulum2D, pendulumDialX, pendulumDialY],
+        [rScene, cursor, pendulumDialX, pendulumDialY],
         'setDampingRatio'
       ),
       100
@@ -302,7 +304,8 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
         
         components.forEach(component => component[methodName](value));
 
-        scene.reset();
+        fsScene.reset();
+        rScene.reset();
       }
     };
   }
@@ -319,3 +322,4 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     };
   }
 }
+
