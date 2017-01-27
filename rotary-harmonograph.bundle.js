@@ -47,110 +47,124 @@
 
 	'use strict';
 
-	var _Label = __webpack_require__(35);
+	var _AbsoluteScene = __webpack_require__(37);
 
-	var _Label2 = _interopRequireDefault(_Label);
+	var _AbsoluteScene2 = _interopRequireDefault(_AbsoluteScene);
 
-	var _Pendulum2D = __webpack_require__(36);
+	var _Cursor2D = __webpack_require__(38);
 
-	var _Pendulum2D2 = _interopRequireDefault(_Pendulum2D);
-
-	var _PendulumDial = __webpack_require__(3);
-
-	var _PendulumDial2 = _interopRequireDefault(_PendulumDial);
+	var _Cursor2D2 = _interopRequireDefault(_Cursor2D);
 
 	var _FullScreenScene = __webpack_require__(30);
 
 	var _FullScreenScene2 = _interopRequireDefault(_FullScreenScene);
 
-	var _UnitCircle = __webpack_require__(34);
+	var _PendulumDial = __webpack_require__(3);
 
-	var _UnitCircle2 = _interopRequireDefault(_UnitCircle);
+	var _PendulumDial2 = _interopRequireDefault(_PendulumDial);
+
+	var _RotaryHarmonograph = __webpack_require__(39);
+
+	var _RotaryHarmonograph2 = _interopRequireDefault(_RotaryHarmonograph);
+
+	var _constants = __webpack_require__(2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var content = document.getElementById('content');
-	var canvas = document.getElementById('canvas');
-	setupCanvas(content, canvas);
+	var fullScreenCanvas = document.getElementById('canvas');
+	var rotaryCanvas = document.getElementById('rotary');
 
-	function setupCanvas(content, canvas) {
-	  var _getVisualizationStat = getVisualizationState(content, canvas),
-	      ctx = _getVisualizationStat.ctx,
-	      scene = _getVisualizationStat.scene,
+	setupCanvas(content, fullScreenCanvas, rotaryCanvas);
+
+	function setupCanvas(content, fullScreenCanvas, rotaryCanvas) {
+	  var _getVisualizationStat = getVisualizationState(content, fullScreenCanvas, rotaryCanvas),
+	      fsScene = _getVisualizationStat.fsScene,
+	      rScene = _getVisualizationStat.rScene,
 	      pendulumDialX = _getVisualizationStat.pendulumDialX,
 	      pendulumDialY = _getVisualizationStat.pendulumDialY,
-	      pendulum2D = _getVisualizationStat.pendulum2D,
-	      unitCircleX = _getVisualizationStat.unitCircleX,
-	      unitCircleY = _getVisualizationStat.unitCircleY;
+	      cursor = _getVisualizationStat.cursor,
+	      rotaryHarmonograph = _getVisualizationStat.rotaryHarmonograph;
 
-	  setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY);
+	  setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph);
 
-	  scene.start();
+	  fsScene.start();
+	  rScene.start();
 	}
 
-	function getVisualizationState(content, canvas) {
-	  if (canvas._state) {
-	    return canvas._state;
-	  } else {
-	    var ctx = canvas.getContext('2d');
-	    var scene = new _FullScreenScene2.default(content, ctx);
+	function getVisualizationState(content, fullScreenCanvas, rotaryCanvas) {
+	  var fsScene = new _FullScreenScene2.default(content, fullScreenCanvas.getContext('2d'));
 
-	    var xMidPoint = scene.width / 2;
-	    var yMidPoint = scene.height / 2;
+	  var screenWidth = fsScene.width;
+	  var screenHeight = fsScene.height;
 
-	    var amplitudeX = 100;
-	    var amplitudeY = 50;
+	  var xMidpoint = screenWidth / 2;
+	  var yMidpoint = screenHeight / 2;
 
-	    var x = xMidPoint - amplitudeX;
-	    var y = yMidPoint - amplitudeY;
+	  var x = xMidpoint - 150;
+	  var y = yMidpoint - 150;
 
-	    var width = amplitudeX * 2;
-	    var height = amplitudeY * 2;
+	  var radius = 50;
 
-	    var pendulumDialX = new _PendulumDial2.default(scene, x, y - 20, width, 10, 'horizontal', amplitudeX, Math.PI);
-	    var pendulumDialY = new _PendulumDial2.default(scene, x - 20, y, 10, height, 'vertical', amplitudeY, Math.PI, Math.PI);
-	    var pendulum2D = new _Pendulum2D2.default(scene, x, y, width, height, amplitudeX, amplitudeY, Math.PI, Math.PI, Math.PI / 2, Math.PI);
-	    var unitCircleX = new _UnitCircle2.default(scene, xMidPoint - 75, scene.height - 100, 40, Math.PI);
-	    var unitCircleY = new _UnitCircle2.default(scene, xMidPoint + 75, scene.height - 100, 40, Math.PI, Math.PI);
-	    var unitCircleXLabel = new _Label2.default(scene, xMidPoint - 75, scene.height - 25, 'X Component', 14, 'courier');
-	    var unitCircleYLabel = new _Label2.default(scene, xMidPoint + 75, scene.height - 25, 'Y Component', 14, 'courier');
+	  var amplitudeX = 150;
+	  var amplitudeY = 150;
 
-	    // TODO: resize objects based on container size
+	  var width = amplitudeX * 2;
+	  var height = amplitudeY * 2;
 
-	    var state = {
-	      ctx: ctx,
-	      scene: scene,
-	      pendulumDialX: pendulumDialX,
-	      pendulumDialY: pendulumDialY,
-	      pendulum2D: pendulum2D,
-	      unitCircleX: unitCircleX,
-	      unitCircleY: unitCircleY
-	    };
+	  var frequencyX = _constants.HALF_PI;
+	  var frequencyY = _constants.HALF_PI;
 
-	    canvas._state = state;
+	  var rScene = new _AbsoluteScene2.default(content, rotaryCanvas.getContext('2d'), x, y, width, height, radius, Math.PI / 2);
+	  rScene.setPosition(x, y);
 
-	    return state;
-	  }
+	  var pendulumDialX = new _PendulumDial2.default(fsScene, x, y - 20, width, 10, 'horizontal', amplitudeX - radius, Math.PI / 2);
+	  var pendulumDialY = new _PendulumDial2.default(fsScene, x - 20, y, 10, height, 'vertical', amplitudeY - radius, Math.PI / 2, Math.PI);
+	  var cursor = new _Cursor2D2.default(fsScene, x, y, width, height, 2, 'red', amplitudeX - radius, amplitudeY - radius, frequencyX, frequencyY, undefined, Math.PI);
+
+	  var rotaryHarmonograph = new _RotaryHarmonograph2.default(rScene, x, y, width, height, function () {
+	    var absoluteX = pendulumDialX.getAbsolutePosition();
+	    var absoluteY = pendulumDialY.getAbsolutePosition();
+
+	    var relativeX = absoluteX - x;
+	    var relativeY = absoluteY - y;
+
+	    var _rScene$getOffsets = rScene.getOffsets(),
+	        offsetX = _rScene$getOffsets.x,
+	        offsetY = _rScene$getOffsets.y;
+
+	    return { x: relativeX - offsetX, y: relativeY - offsetY };
+	  });
+
+	  return {
+	    fsScene: fsScene,
+	    rScene: rScene,
+	    pendulumDialX: pendulumDialX,
+	    pendulumDialY: pendulumDialY,
+	    cursor: cursor,
+	    rotaryHarmonograph: rotaryHarmonograph
+	  };
 	}
 
-	function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY) {
-	  var xMidPoint = scene.width / 2;
-	  var yMidPoint = scene.height / 2;
+	function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph) {
 
 	  var pauseButton = document.getElementById('pause');
 	  pauseButton.addEventListener('click', function (e) {
-	    if (scene.playing) {
-	      scene.stop();
+	    if (fsScene.playing) {
+	      fsScene.stop();
+	      rScene.stop();
 	      pauseButton.textContent = 'Resume';
 	    } else {
-	      scene.start();
+	      fsScene.start();
+	      rScene.start();
 	      pauseButton.textContent = 'Pause';
 	    }
 	  });
 
 	  document.getElementById('reset').addEventListener('click', function () {
 	    pauseButton.textContent = 'Pause';
-	    scene.reset();
+	    fsScene.reset();
+	    rScene.reset();
 	  });
 
 	  var amplitudeXInput = document.getElementById('amplitude-x');
@@ -159,51 +173,36 @@
 	  var frequencyYInput = document.getElementById('frequency-y');
 	  var phaseShiftXInput = document.getElementById('phase-shift-x');
 	  var phaseShiftYInput = document.getElementById('phase-shift-y');
+	  var rotaryRadiusInput = document.getElementById('rotary-radius');
 	  var dampingInput = document.getElementById('damping');
 
-	  // TODO: set x/y for Pendulum2D
+	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [pendulumDialX], 'setFrequency', Math.PI), 100));
 
-	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [pendulumDialX, unitCircleX], 'setFrequency', Math.PI), 100));
+	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [cursor], 'setFrequencyX', Math.PI), 100));
 
-	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [pendulum2D], 'setFrequencyX', Math.PI), 100));
+	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [pendulumDialY], 'setFrequency', Math.PI), 100));
 
-	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [pendulumDialY, unitCircleY], 'setFrequency', Math.PI), 100));
+	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [cursor], 'setFrequencyY', Math.PI), 100));
 
-	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [pendulum2D], 'setFrequencyY', Math.PI), 100));
+	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [pendulumDialX], 'setPhaseShift', Math.PI), 100));
 
-	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [pendulumDialX, unitCircleX], 'setPhaseShift', Math.PI), 100));
+	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [cursor], 'setPhaseShiftX', Math.PI), 100));
 
-	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [pendulum2D], 'setPhaseShiftX', Math.PI), 100));
+	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [pendulumDialY], 'setPhaseShift', Math.PI), 100));
 
-	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [pendulumDialY, unitCircleY], 'setPhaseShift', Math.PI), 100));
-
-	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [pendulum2D], 'setPhaseShiftY', Math.PI), 100));
+	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [cursor], 'setPhaseShiftY', Math.PI), 100));
 
 	  amplitudeXInput.addEventListener('input', debounce(createInputHandler(amplitudeXInput, [pendulumDialX], 'setAmplitude'), 100));
 
-	  amplitudeXInput.addEventListener('input', debounce(createInputHandler(amplitudeXInput, [pendulum2D], 'setAmplitudeX'), 100));
-
-	  amplitudeXInput.addEventListener('input', debounce(function (e) {
-	    var value = parseFloat(e.target.value);
-
-	    if (isFinite(value)) {
-	      pendulumDialY.setX(xMidPoint - value - 20);
-	    }
-	  }, 100));
+	  amplitudeXInput.addEventListener('input', debounce(createInputHandler(amplitudeXInput, [cursor], 'setAmplitudeX'), 100));
 
 	  amplitudeYInput.addEventListener('input', debounce(createInputHandler(amplitudeYInput, [pendulumDialY], 'setAmplitude'), 100));
 
-	  amplitudeYInput.addEventListener('input', debounce(createInputHandler(amplitudeYInput, [pendulum2D], 'setAmplitudeY'), 100));
+	  amplitudeYInput.addEventListener('input', debounce(createInputHandler(amplitudeYInput, [cursor], 'setAmplitudeY'), 100));
 
-	  amplitudeYInput.addEventListener('input', debounce(function (e) {
-	    var value = parseFloat(e.target.value);
+	  rotaryRadiusInput.addEventListener('input', debounce(createInputHandler(rotaryRadiusInput, [rScene, cursor], 'setRadius'), 100));
 
-	    if (isFinite(value)) {
-	      pendulumDialX.setY(yMidPoint - value - 20);
-	    }
-	  }, 100));
-
-	  dampingInput.addEventListener('input', debounce(createInputHandler(dampingInput, [pendulum2D, pendulumDialX, pendulumDialY], 'setDampingRatio'), 100));
+	  dampingInput.addEventListener('input', debounce(createInputHandler(dampingInput, [rScene, cursor, pendulumDialX, pendulumDialY], 'setDampingRatio'), 100));
 
 	  function createInputHandler(input, components, methodName, multiplier) {
 	    return function (e) {
@@ -218,7 +217,8 @@
 	          return component[methodName](value);
 	        });
 
-	        scene.reset();
+	        fsScene.reset();
+	        rScene.reset();
 	      }
 	    };
 	  }
@@ -702,7 +702,7 @@
 
 /***/ },
 
-/***/ 34:
+/***/ 37:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -713,46 +713,64 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _Scene2 = __webpack_require__(32);
+
+	var _Scene3 = _interopRequireDefault(_Scene2);
+
 	var _constants = __webpack_require__(2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var UnitCircle = function () {
-	  function UnitCircle(scene, x, y, radius, frequency, phaseShift) {
-	    _classCallCheck(this, UnitCircle);
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	    this.scene = scene;
-	    this.ctx = scene.ctx;
-	    this.x = x;
-	    this.y = y;
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	    this.radius = radius;
-	    this.frequency = frequency || 2 * Math.PI; // One 'cycle' per 1 second
-	    this.phaseShift = phaseShift === undefined ? _constants.HALF_PI : phaseShift; // must be in radians
-	    this.dampingRatio = 0;
+	var AbsoluteScene = function (_Scene) {
+	  _inherits(AbsoluteScene, _Scene);
 
-	    this.t = 0;
-	    this._dialCoordinateDelta = this._delta(this.t);
+	  function AbsoluteScene(container, ctx, x, y, width, height, radius, frequency, phaseShift) {
+	    _classCallCheck(this, AbsoluteScene);
 
-	    scene.addObject(this);
+	    var _this = _possibleConstructorReturn(this, (AbsoluteScene.__proto__ || Object.getPrototypeOf(AbsoluteScene)).call(this, container, ctx));
+
+	    _this.canvas = ctx.canvas;
+	    _this.x = x;
+	    _this.y = y;
+	    _this.width = width;
+	    _this.height = height;
+
+	    _this.radius = radius;
+	    _this.frequency = frequency || 2 * Math.PI;
+	    _this.phaseShift = phaseShift || Math.PI / 2;
+
+	    _this.dampingRatio = 0;
+	    _this.t = 0;
+
+	    var _this$_delta = _this._delta(_this.t),
+	        offsetX = _this$_delta.x,
+	        offsetY = _this$_delta.y;
+
+	    _this._offsetX = offsetX;
+	    _this._offsetY = offsetY;
+	    return _this;
 	  }
 
-	  _createClass(UnitCircle, [{
-	    key: 'setAmplitude',
-	    value: function setAmplitude(amplitude) {
-	      this.radius = amplitude;
+	  _createClass(AbsoluteScene, [{
+	    key: 'setPosition',
+	    value: function setPosition(x, y) {
+	      this.canvas.style.left = x + 'px';
+	      this.canvas.style.top = y + 'px';
+
 	      return this;
 	    }
 	  }, {
-	    key: 'setFrequency',
-	    value: function setFrequency(frequency) {
-	      this.frequency = frequency;
-	      return this;
-	    }
-	  }, {
-	    key: 'setPhaseShift',
-	    value: function setPhaseShift(phaseShift) {
-	      this.phaseShift = phaseShift;
+	    key: 'setRadius',
+	    value: function setRadius(radius) {
+	      this.radius = radius;
 	      return this;
 	    }
 	  }, {
@@ -763,83 +781,41 @@
 	    }
 	  }, {
 	    key: 'clear',
-	    value: function clear() {
-	      this.ctx.clearRect(this.x - this.radius - 20, this.y - this.radius - 20, this.x + this.radius + 20, this.y + this.radius + 20);
+	    value: function clear() {}
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      _get(AbsoluteScene.prototype.__proto__ || Object.getPrototypeOf(AbsoluteScene.prototype), 'reset', this).call(this);
+	      this.t = 0;
+
+	      var _delta2 = this._delta(this.t),
+	          offsetX = _delta2.x,
+	          offsetY = _delta2.y;
+
+	      this._offsetX = offsetX;
+	      this._offsetY = offsetY;
 	    }
 	  }, {
 	    key: 'draw',
 	    value: function draw() {
-	      this.drawCircle();
-	      this.drawY();
-	      this.drawDial();
-	      this.drawLegend();
-	    }
-	  }, {
-	    key: 'reset',
-	    value: function reset() {
-	      this.t = 0;
-	    }
-	  }, {
-	    key: 'tick',
-	    value: function tick() {
+	      _get(AbsoluteScene.prototype.__proto__ || Object.getPrototypeOf(AbsoluteScene.prototype), 'draw', this).call(this);
 	      this.t += _constants.TICK_IN_SEC;
-	      this._dialCoordinateDelta = this._delta(this.t);
+
+	      var _delta3 = this._delta(this.t),
+	          x = _delta3.x,
+	          y = _delta3.y;
+
+	      this._offsetX = x;
+	      this._offsetY = y;
+	      this.setPosition(this.x + x, this.y + y);
 	    }
 	  }, {
-	    key: 'drawCircle',
-	    value: function drawCircle() {
-	      this.ctx.strokeStyle = '#000000';
-	      this.ctx.lineWidth = 1;
-
-	      this.ctx.beginPath();
-	      this.ctx.arc(this.x, this.y, 1, 0, _constants.TWO_PI);
-	      this.ctx.fill();
-
-	      var damping = this.dampingRatio ? Math.pow(Math.E, -(this.dampingRatio * this.t)) : 1;
-	      this.ctx.beginPath();
-	      this.ctx.arc(this.x, this.y, this.radius * damping, 0, _constants.TWO_PI);
-	      this.ctx.stroke();
-	    }
-	  }, {
-	    key: 'drawDial',
-	    value: function drawDial() {
-	      var _dialCoordinateDelta = this._dialCoordinateDelta,
-	          x = _dialCoordinateDelta.x,
-	          y = _dialCoordinateDelta.y;
-
-
-	      this.ctx.beginPath();
-	      this.ctx.fillStyle = '#FF0000';
-	      this.ctx.arc(this.x + x, this.y - y, 2, 0, _constants.TWO_PI);
-	      this.ctx.fill();
-	    }
-	  }, {
-	    key: 'drawY',
-	    value: function drawY() {
-	      var _dialCoordinateDelta2 = this._dialCoordinateDelta,
-	          x = _dialCoordinateDelta2.x,
-	          y = _dialCoordinateDelta2.y;
-
-
-	      this.ctx.lineWidth = 1.5;
-	      this.ctx.strokeStyle = '#0000FF';
-
-	      this.ctx.beginPath();
-	      this.ctx.moveTo(this.x + x, this.y);
-	      this.ctx.lineTo(this.x + x, this.y - y);
-	      this.ctx.stroke();
-	    }
-	  }, {
-	    key: 'drawLegend',
-	    value: function drawLegend() {
-	      var damping = this.dampingRatio ? Math.pow(Math.E, -(this.dampingRatio * this.t)) : 1;
-	      this.ctx.fillStyle = '#000000';
-	      this.ctx.lineWidth = 1;
-	      this.ctx.font = '12px sans-serif';
-	      this.ctx.fillText('0', this.x + this.radius * damping + 5, this.y + 5);
-	      this.ctx.fillText('𝜋 / 2', this.x - 10, this.y - this.radius * damping - 5);
-	      this.ctx.fillText('𝜋', this.x - this.radius * damping - 12, this.y + 5);
-	      this.ctx.fillText('3𝜋 / 2', this.x - 15, this.y + this.radius * damping + 13);
+	    key: 'getOffsets',
+	    value: function getOffsets() {
+	      return {
+	        x: this._offsetX,
+	        y: this._offsetY
+	      };
 	    }
 	  }, {
 	    key: '_delta',
@@ -848,83 +824,26 @@
 	      var y = this.radius * Math.sin(this.frequency * t + this.phaseShift);
 
 	      if (this.dampingRatio) {
-	        var damping = Math.pow(Math.E, -(this.dampingRatio * t));
-	        return {
-	          x: x * damping,
-	          y: y * damping
-	        };
+	        var e = Math.pow(Math.E, -(this.dampingRatio * t));
+	        x *= e;
+	        y *= e;
 	      }
 
-	      return { x: x, y: y };
+	      return {
+	        x: x,
+	        y: y
+	      };
 	    }
 	  }]);
 
-	  return UnitCircle;
-	}();
+	  return AbsoluteScene;
+	}(_Scene3.default);
 
-	exports.default = UnitCircle;
-
-/***/ },
-
-/***/ 35:
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var Label = function () {
-	  function Label(scene, x, y, text, textSize, fontFamily) {
-	    _classCallCheck(this, Label);
-
-	    this.scene = scene;
-	    this.ctx = scene.ctx;
-	    this.x = x;
-	    this.y = y;
-	    this.text = text;
-	    this.textAlign = 'center';
-	    this.textSize = textSize;
-	    this.font = textSize + 'px ' + fontFamily;
-	    this.fontFamily = fontFamily;
-
-	    scene.addObject(this);
-	  }
-
-	  _createClass(Label, [{
-	    key: 'clear',
-	    value: function clear() {}
-	  }, {
-	    key: 'tick',
-	    value: function tick() {}
-	  }, {
-	    key: 'reset',
-	    value: function reset() {}
-	  }, {
-	    key: 'draw',
-	    value: function draw() {
-	      this.ctx.save();
-	      this.ctx.font = this.font;
-	      this.ctx.fillStyle = '#222';
-	      this.ctx.textAlign = this.textAlign;
-	      this.ctx.fillText(this.text, this.x, this.y);
-	      this.ctx.restore();
-	    }
-	  }]);
-
-	  return Label;
-	}();
-
-	exports.default = Label;
+	exports.default = AbsoluteScene;
 
 /***/ },
 
-/***/ 36:
+/***/ 38:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -939,40 +858,37 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Pendulum2D = function () {
-	  function Pendulum2D(scene, x, y, width, height, amplitudeX, amplitudeY, frequencyX, frequencyY, phaseShiftX, phaseShiftY) {
-	    _classCallCheck(this, Pendulum2D);
+	var Cursor2D = function () {
+	  function Cursor2D(scene, x, y, width, height, radius, color, amplitudeX, amplitudeY, frequencyX, frequencyY, phaseShiftX, phaseShiftY) {
+	    _classCallCheck(this, Cursor2D);
 
 	    this.scene = scene;
 	    this.ctx = scene.ctx;
-	    this.height = height;
-	    this.width = width;
 	    this.x = x;
 	    this.y = y;
+	    this.width = width;
+	    this.height = height;
 
 	    this.amplitudeX = amplitudeX;
 	    this.amplitudeY = amplitudeY;
-	    this.frequencyX = frequencyX || 2 * Math.PI; // One 'cycle' per 1 second
-	    this.frequencyY = frequencyY || 2 * Math.PI; // One 'cycle' per 1 second
-	    this.phaseShiftX = phaseShiftX === undefined ? _constants.HALF_PI : phaseShiftX; // Must be in radians
-	    this.phaseShiftY = phaseShiftY === undefined ? _constants.HALF_PI : phaseShiftY; // Must be in radians
+	    this.frequencyX = frequencyX || _constants.TWO_PI;
+	    this.frequencyY = frequencyY || _constants.TWO_PI;
+	    this.phaseShiftX = phaseShiftX || _constants.HALF_PI;
+	    this.phaseShiftY = phaseShiftY || _constants.HALF_PI;
 	    this.dampingRatio = 0;
 
+	    this.radius = radius || 2;
+	    this.color = color || 'red';
+
+	    this._xOrigin = this.x + this.width / 2;
+	    this._yOrigin = this.y + this.width / 2;
+
 	    this.t = 0;
-	    this.path = new Path2D();
-
-	    this._pendulumXOrigin = this.x + this.width / 2;
-	    this._pendulumYOrigin = this.y + this.height / 2;
-
-	    this._pendulumX = this._pendulumXOrigin + this._deltaX(this.amplitudeX, this.t);
-	    this._pendulumY = this._pendulumYOrigin + this._deltaY(this.amplitudeY, this.t);
-
-	    this.path.moveTo(this._pendulumX, this._pendulumY);
 
 	    scene.addObject(this);
 	  }
 
-	  _createClass(Pendulum2D, [{
+	  _createClass(Cursor2D, [{
 	    key: 'setAmplitudeX',
 	    value: function setAmplitudeX(amplitude) {
 	      this.amplitudeX = amplitude;
@@ -1005,63 +921,45 @@
 	      this.phaseShiftY = phaseShift;
 	    }
 	  }, {
+	    key: 'setRadius',
+	    value: function setRadius(radius) {
+	      this.radius = radius;
+	      return this;
+	    }
+	  }, {
 	    key: 'setDampingRatio',
 	    value: function setDampingRatio(dampingRatio) {
 	      this.dampingRatio = dampingRatio;
-	      return this;
 	    }
 	  }, {
 	    key: 'reset',
 	    value: function reset() {
 	      this.t = 0;
-	      this.path = new Path2D();
-
-	      this._pendulumX = this._pendulumXOrigin + this._deltaX(this.t);
-	      this._pendulumY = this._pendulumYOrigin + this._deltaY(this.t);
+	      this._pendulumX = 0;
+	      this._pendulumY = 0;
 	    }
-
-	    // Intentionally left blank
-
 	  }, {
 	    key: 'clear',
-	    value: function clear() {}
+	    value: function clear() {
+	      this.ctx.clearRect(this._prevPendulumX - this.radius * 2, this._prevPendulumY - this.radius * 2, this.radius * 4, this.radius * 4);
+	    }
 	  }, {
 	    key: 'tick',
 	    value: function tick() {
 	      this.t += _constants.TICK_IN_SEC;
 
-	      this._lastPendulumX = this._pendulumX;
-	      this._lastPendulumY = this._pendulumY;
-	      this._pendulumX = this._pendulumXOrigin + this._deltaX(this.t);
-	      this._pendulumY = this._pendulumYOrigin + this._deltaY(this.t);
+	      var _delta2 = this._delta(this.t),
+	          x = _delta2.x,
+	          y = _delta2.y;
+
+	      this._prevPendulumX = this._pendulumX;
+	      this._prevPendulumY = this._pendulumY;
+	      this._pendulumX = this._xOrigin + x;
+	      this._pendulumY = this._yOrigin + y;
 	    }
 	  }, {
 	    key: 'draw',
 	    value: function draw() {
-	      this.clearCursor();
-	      this.drawPen();
-	      this.drawCursor();
-	    }
-	  }, {
-	    key: 'drawPen',
-	    value: function drawPen() {
-	      this.ctx.save();
-
-	      this.ctx.strokeStyle = '#222';
-	      this.ctx.lineWidth = 1;
-	      this.path.lineTo(this._pendulumX, this._pendulumY);
-	      this.ctx.stroke(this.path);
-
-	      this.ctx.restore();
-	    }
-	  }, {
-	    key: 'clearCursor',
-	    value: function clearCursor() {
-	      this.ctx.clearRect(this._lastPendulumX - 3, this._lastPendulumY - 3, 6, 6);
-	    }
-	  }, {
-	    key: 'drawCursor',
-	    value: function drawCursor() {
 	      this.ctx.save();
 	      this.ctx.beginPath();
 	      this.ctx.fillStyle = 'red';
@@ -1070,33 +968,102 @@
 	      this.ctx.restore();
 	    }
 	  }, {
-	    key: '_deltaX',
-	    value: function _deltaX(t) {
-	      var dx = this.amplitudeX * Math.sin(this.frequencyX * t + this.phaseShiftX);
+	    key: '_delta',
+	    value: function _delta(t) {
+	      var x = this.amplitudeX * Math.sin(this.frequencyX * this.t + this.phaseShiftX);
+	      var y = this.amplitudeY * Math.sin(this.frequencyY * this.t + this.phaseShiftY);
 
 	      if (this.dampingRatio) {
-	        dx *= Math.pow(Math.E, -(this.dampingRatio * t));
+	        var e = Math.pow(Math.E, -(this.dampingRatio * t));
+	        x *= e;
+	        y *= e;
 	      }
 
-	      return dx;
-	    }
-	  }, {
-	    key: '_deltaY',
-	    value: function _deltaY(t) {
-	      var dy = this.amplitudeY * Math.sin(this.frequencyY * t + this.phaseShiftY);
-
-	      if (this.dampingRatio) {
-	        dy *= Math.pow(Math.E, -(this.dampingRatio * t));
-	      }
-
-	      return dy;
+	      return {
+	        x: x,
+	        y: y
+	      };
 	    }
 	  }]);
 
-	  return Pendulum2D;
+	  return Cursor2D;
 	}();
 
-	exports.default = Pendulum2D;
+	exports.default = Cursor2D;
+
+/***/ },
+
+/***/ 39:
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var RotaryHarmonograph = function () {
+		function RotaryHarmonograph(scene, x, y, width, height, callback) {
+			_classCallCheck(this, RotaryHarmonograph);
+
+			this.scene = scene;
+			this.ctx = scene.ctx;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			this.dampingRatio = 0;
+
+			this.callback = callback;
+
+			this.path = new Path2D();
+
+			scene.addObject(this);
+		}
+
+		_createClass(RotaryHarmonograph, [{
+			key: 'setDampingRatio',
+			value: function setDampingRatio(dampingRatio) {
+				this.dampingRatio = dampingRatio;
+				return this;
+			}
+		}, {
+			key: 'clear',
+			value: function clear() {}
+		}, {
+			key: 'reset',
+			value: function reset() {
+				this.path = new Path2D();
+				this.ctx.clearRect(this.x, this.y, this.width, this.height);
+			}
+		}, {
+			key: 'tick',
+			value: function tick() {
+				var _callback = this.callback(),
+				    x = _callback.x,
+				    y = _callback.y;
+
+				this.path.lineTo(x, y);
+			}
+		}, {
+			key: 'draw',
+			value: function draw() {
+				this.ctx.save();
+				this.ctx.strokeStyle = '#000';
+				this.ctx.lineWidth = 0.1;
+				this.ctx.stroke(this.path);
+				this.ctx.restore();
+			}
+		}]);
+
+		return RotaryHarmonograph;
+	}();
+
+	exports.default = RotaryHarmonograph;
 
 /***/ }
 
