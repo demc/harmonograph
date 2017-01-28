@@ -1,14 +1,21 @@
 import Label from './Label';
 import Pendulum2D from './Pendulum2D';
 import PendulumDial from './PendulumDial';
+import Formula2D from './Formula2D';
 import FullScreenScene from './FullScreenScene';
 import UnitCircle from './UnitCircle';
 
 let content = document.getElementById('content');
 let canvas = document.getElementById('canvas');
-setupCanvas(content, canvas);
 
-function setupCanvas(content, canvas) {
+let formulaX = document.getElementById('formula-x');
+let formulaXValues = document.getElementById('formula-x-values');
+let formulaY = document.getElementById('formula-y');
+let formulaYValues = document.getElementById('formula-y-values');
+
+setupCanvas(content, canvas, formulaX, formulaXValues, formulaY, formulaYValues);
+
+function setupCanvas(content, canvas, formulaX, formulaXValues, formulaY, formulaYValues) {
   const {
     ctx,
     scene, 
@@ -16,15 +23,16 @@ function setupCanvas(content, canvas) {
     pendulumDialY,
     pendulum2D,
     unitCircleX,
-    unitCircleY
-  } = getVisualizationState(content, canvas);
+    unitCircleY,
+    formula2D
+  } = getVisualizationState(content, canvas, formulaX, formulaXValues, formulaY, formulaYValues);
 
-  setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY);
+  setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY, formula2D);
 
   scene.start();
 }
 
-function getVisualizationState(content, canvas) {
+function getVisualizationState(content, canvas, formulaX, formulaXValues, formulaY, formulaYValues) {
   if (canvas._state) {
     return canvas._state;
   } else {
@@ -51,6 +59,20 @@ function getVisualizationState(content, canvas) {
     let unitCircleXLabel = new Label(scene, xMidPoint - 75, scene.height - 25, 'X Component', 14, 'courier');
     let unitCircleYLabel = new Label(scene, xMidPoint + 75, scene.height - 25, 'Y Component', 14, 'courier');
 
+    let formula2D = new Formula2D(
+      formulaX,
+      formulaXValues,
+      formulaY,
+      formulaYValues,
+      amplitudeX,
+      amplitudeY,
+      Math.PI,
+      Math.PI,
+      Math.PI / 2,
+      Math.PI
+    );
+    formula2D.render();
+
     // TODO: resize objects based on container size
 
     const state = {
@@ -60,7 +82,8 @@ function getVisualizationState(content, canvas) {
       pendulumDialY,
       pendulum2D,
       unitCircleX,
-      unitCircleY
+      unitCircleY,
+      formula2D
     };
 
     canvas._state = state;
@@ -69,7 +92,7 @@ function getVisualizationState(content, canvas) {
   }
 }
 
-function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY) {
+function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D, unitCircleX, unitCircleY, formula2D) {
   const xMidPoint = scene.width / 2;
   const yMidPoint = scene.height / 2;
 
@@ -117,7 +140,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         frequencyXInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setFrequencyX',
         Math.PI
       ),
@@ -143,7 +166,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         frequencyYInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setFrequencyY',
         Math.PI
       ),
@@ -169,7 +192,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftXInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setPhaseShiftX',
         Math.PI
       ),
@@ -195,7 +218,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         phaseShiftYInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setPhaseShiftY',
         Math.PI
       ),
@@ -220,7 +243,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         amplitudeXInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setAmplitudeX'
       ),
       100
@@ -258,7 +281,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         amplitudeYInput,
-        [pendulum2D],
+        [pendulum2D, formula2D],
         'setAmplitudeY'
       ),
       100
@@ -284,7 +307,7 @@ function setupInputHandlers(ctx, scene, pendulumDialX, pendulumDialY, pendulum2D
     debounce(
       createInputHandler(
         dampingInput,
-        [pendulum2D, pendulumDialX, pendulumDialY],
+        [pendulum2D, pendulumDialX, pendulumDialY, formula2D],
         'setDampingRatio'
       ),
       100

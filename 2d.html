@@ -4,6 +4,8 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <title>Two Dimensional Pendular Motion</title>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+
     <style>
 
       html, body {
@@ -29,6 +31,37 @@
         position: absolute;
         right: 0;
         top: 0;
+      }
+      
+      #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+        left: 10px;
+        position: absolute;
+        top: 10px;
+        z-index: 99;
+      }
+
+      #formula-x-values {
+        top: 43px;
+      }
+
+      #formula-y {
+        top: 76px;
+      }
+
+      #formula-y-values {
+        top: 109px;
+      }
+      
+      @media (min-width: 760px) {
+        #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+          font-size: 22px;
+        }
+      }
+
+      @media (max-width: 759px) {
+        #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+          font-size: 14px;
+        }
       }
 
       h1 {
@@ -131,6 +164,10 @@
 
     <div id="content">
       <canvas id="canvas" width="400" height="500"></canvas>
+      <div id="formula-x"></div>
+      <div id="formula-x-values"></div>
+      <div id="formula-y"></div>
+      <div id="formula-y-values"></div>
     </div>
 
     <script src="2d.bundle.js"></script>
