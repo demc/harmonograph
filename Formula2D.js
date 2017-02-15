@@ -17,12 +17,12 @@ function radian_to_tex(value) {
   return '\\pi';
 }
 
-const FORMULA = ' = A \\cdot\\sin(f \\cdot t + p)';
-const FORMULA_X = 'x' + FORMULA;
-const FORMULA_Y = 'y' + FORMULA;
-const FORMULA_DAMPING = ' = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
-const FORMULA_DAMPING_X = 'x' + FORMULA_DAMPING;
-const FORMULA_DAMPING_Y = 'y' + FORMULA_DAMPING;
+const FORMULA = (s) => `${s}(t) = A_{${s}} \\cdot\\sin(f_{${s}} \\cdot t + p_{${s}})`;
+const FORMULA_X = FORMULA('x');
+const FORMULA_Y = FORMULA('y');
+const FORMULA_DAMPING = (s) => `${s}(t) = A_{${s}} \\cdot\\sin(f_{${s}} \\cdot t + p_{${s}}) \\cdot e^{d_{${s}}t}`;
+const FORMULA_DAMPING_X = FORMULA_DAMPING('x');
+const FORMULA_DAMPING_Y = FORMULA_DAMPING('y');
 
 class Formula2D {
 

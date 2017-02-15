@@ -17,8 +17,8 @@ function radian_to_tex(value) {
 	return '\\pi';
 }
 
-const FORMULA = 'x = A \\cdot\\sin(f \\cdot t + p)';
-const FORMULA_DAMPING = 'x = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
+const FORMULA = 'x(t) = A \\cdot\\sin(f \\cdot t + p)';
+const FORMULA_DAMPING = 'x(t) = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
 
 class Formula1D {
 
@@ -67,7 +67,7 @@ class Formula1D {
     );
 
     katex.render(
-			this.variable + ' = ' + this.amplitude + ' \\cdot\\sin(' + 
+			this.variable + '(t) = ' + this.amplitude + ' \\cdot\\sin(' + 
       radian_to_tex(this.frequencyMultiplier) + 
       '\\cdot t + ' + 
     	radian_to_tex(this.phaseShiftMultiplier) +
