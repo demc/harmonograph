@@ -20,7 +20,7 @@ function radian_to_tex(value) {
 const FORMULA = (s) => `${s}(t) = A_{${s}} \\cdot\\sin(f_{${s}} \\cdot t + p_{${s}})`;
 const FORMULA_X = FORMULA('x');
 const FORMULA_Y = FORMULA('y');
-const FORMULA_DAMPING = (s) => `${s}(t) = A_{${s}} \\cdot\\sin(f_{${s}} \\cdot t + p_{${s}}) \\cdot e^{d_{${s}}t}`;
+const FORMULA_DAMPING = (s) => `${s}(t) = A_{${s}} \\cdot\\sin(f_{${s}} \\cdot t + p_{${s}}) \\cdot e^{-d_{${s}}t}`;
 const FORMULA_DAMPING_X = FORMULA_DAMPING('x');
 const FORMULA_DAMPING_Y = FORMULA_DAMPING('y');
 
@@ -109,7 +109,7 @@ class Formula2D {
       '\\cdot t + ' + 
       radian_to_tex(this.phaseShiftXMultiplier) +
       ')' + 
-      (this.dampingRatio ? '\\cdot e^{' + this.dampingRatio + 't}' : ''),
+      (this.dampingRatio ? '\\cdot e^{-' + this.dampingRatio + 't}' : ''),
       this.formulaXValuesNode
     );
   }
@@ -126,7 +126,7 @@ class Formula2D {
       '\\cdot t + ' + 
       radian_to_tex(this.phaseShiftYMultiplier) +
       ')' + 
-      (this.dampingRatio ? '\\cdot e^{' + this.dampingRatio + 't}' : ''),
+      (this.dampingRatio ? '\\cdot e^{-' + this.dampingRatio + 't}' : ''),
       this.formulaYValuesNode
     );
   }

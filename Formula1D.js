@@ -18,7 +18,7 @@ function radian_to_tex(value) {
 }
 
 const FORMULA = 'x(t) = A \\cdot\\sin(f \\cdot t + p)';
-const FORMULA_DAMPING = 'x(t) = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
+const FORMULA_DAMPING = 'x(t) = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{-dt}';
 
 class Formula1D {
 
@@ -72,7 +72,7 @@ class Formula1D {
       '\\cdot t + ' + 
     	radian_to_tex(this.phaseShiftMultiplier) +
       ')' + 
-      (this.dampingRatio ? '\\cdot e^{' + this.dampingRatio + 't}' : ''),
+      (this.dampingRatio ? '\\cdot e^{-' + this.dampingRatio + 't}' : ''),
       this.formulaValuesNode
     );
 	}
