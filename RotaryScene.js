@@ -2,10 +2,10 @@ import Scene from './Scene';
 
 import {TICK_IN_SEC} from './constants';
 
-class AbsoluteScene extends Scene {
+class RotaryScene extends Scene {
 
   constructor(container, ctx, x, y, width, height, radius, frequency, phaseShift) {
-    super(container, ctx);
+    super(container, ctx, width, height);
     this.canvas = ctx.canvas;
     this.x = x;
     this.y = y;
@@ -86,4 +86,4 @@ class AbsoluteScene extends Scene {
   }
 }
 
-export default AbsoluteScene;
+export default RotaryScene;

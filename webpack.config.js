@@ -4,6 +4,7 @@ const config = {
   entry: {
     '1d': './1d',
     '2d': './2d',
+    'lateral-harmonograph': './lateral-harmonograph',
     'rotary-harmonograph': './rotary-harmonograph'
   },
   output: {

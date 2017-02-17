@@ -7,8 +7,8 @@ class Scene {
   constructor(container, ctx, width, height) {
     this.container = container;
     this.ctx = ctx;
-    this.height = width;
-    this.width = height;
+    this.height = height;
+    this.width = width;
     this.objects = [];
     this.playing = false;
     this.clearBetweenFrames = false;
@@ -16,7 +16,11 @@ class Scene {
 
     this._timer = null;
 
-    Helpers.adjustPixelDisplayRadio(ctx);
+    const canvas = this.ctx.canvas;
+    canvas.width = width;
+    canvas.height = height;
+
+    Helpers.adjustPixelDisplayRadio(this.ctx);
   }
 
   addObject(obj) {
@@ -27,6 +31,17 @@ class Scene {
   setClearBetweenFrames(clearBetweenFrames) {
     this.clearBetweenFrames = clearBetweenFrames;
     return this;
+  }
+
+  setSize(width, height) {
+    this.width = width;
+    this.height = height;
+
+    const canvas = this.ctx.canvas;
+    canvas.width = width;
+    canvas.height = height;
+
+    Helpers.adjustPixelDisplayRadio(this.ctx);
   }
 
   start() {

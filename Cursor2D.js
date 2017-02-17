@@ -13,7 +13,7 @@ class Cursor2D {
     this.amplitudeX = amplitudeX;
     this.amplitudeY = amplitudeY;
     this.frequencyX = frequencyX || TWO_PI;
-    this.frequencyY = frequencyY || TWO_PI;
+    this.frequencyY = frequencyY === undefined ? TWO_PI : frequencyY;
     this.phaseShiftX = phaseShiftX || HALF_PI;
     this.phaseShiftY = phaseShiftY || HALF_PI;
     this.dampingRatio = 0;
@@ -22,7 +22,7 @@ class Cursor2D {
     this.color = color || 'red';
 
     this._xOrigin = this.x + this.width / 2;
-    this._yOrigin = this.y + this.width / 2;
+    this._yOrigin = this.y + this.height / 2;
 
     this.t = 0;
 

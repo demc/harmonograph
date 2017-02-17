@@ -1,8 +1,9 @@
-import RotaryScene from './RotaryScene';
 import Cursor2D from './Cursor2D';
+import Formula2D from './Formula2D';
 import FullScreenScene from './FullScreenScene';
+import LateralHarmonograph from './LateralHarmonograph';
+import LateralScene from './LateralScene';
 import PendulumDial from './PendulumDial';
-import RotaryHarmonograph from './RotaryHarmonograph';
 
 import {HALF_PI} from './constants';
 
@@ -10,22 +11,27 @@ const content = document.getElementById('content');
 const fullScreenCanvas = document.getElementById('canvas');
 const rotaryCanvas = document.getElementById('rotary');
 
+const formulaX = document.getElementById('formula-x');
+const formulaXValues = document.getElementById('formula-x-values');
+const formulaY = document.getElementById('formula-y');
+const formulaYValues = document.getElementById('formula-y-values');
+
 setupCanvas(content, fullScreenCanvas, rotaryCanvas);
 
 function setupCanvas(content, fullScreenCanvas, rotaryCanvas) {
   const {
     fsScene,
-    rScene,
-    pendulumDialX,
-    pendulumDialY,
+    lScene,
     cursor,
-    rotaryHarmonograph
+    formula2D,
+    lateralHarmonograph,
+    pendulumDialX
   } = getVisualizationState(content, fullScreenCanvas, rotaryCanvas);
 
-  setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph);
+  setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmonograph, formula2D);
 
   fsScene.start();
-  rScene.start();
+  lScene.start();
 }
 
 function getVisualizationState(content, fullScreenCanvas, rotaryCanvas) {
@@ -36,14 +42,12 @@ function getVisualizationState(content, fullScreenCanvas, rotaryCanvas) {
 
   const xMidpoint = screenWidth / 2;
   const yMidpoint = screenHeight / 2;
-
-  const x = xMidpoint - 150;
-  const y = yMidpoint - 150;
-
-  const radius = 50;
   
-  const amplitudeX = 150;
-  const amplitudeY = 150;
+  const amplitudeX = 100;
+  const amplitudeY = 100;
+
+  const x = xMidpoint - amplitudeX;
+  const y = yMidpoint - amplitudeY;
 
   const width = amplitudeX * 2;
   const height = amplitudeY * 2;
@@ -51,53 +55,64 @@ function getVisualizationState(content, fullScreenCanvas, rotaryCanvas) {
   const frequencyX = HALF_PI;
   const frequencyY = HALF_PI;
 
-  const rScene = new RotaryScene(content, rotaryCanvas.getContext('2d'), x, y, width, height, radius, Math.PI / 2);
-  rScene.setPosition(x, y);
+  const sideLength = amplitudeY * 2;
 
-  let pendulumDialX = new PendulumDial(fsScene, x, y - 20, width, 10, 'horizontal', amplitudeX - radius, Math.PI / 2);
-  let pendulumDialY = new PendulumDial(fsScene, x - 20, y, 10, height, 'vertical', amplitudeY - radius, Math.PI / 2, Math.PI);
-  let cursor = new Cursor2D(fsScene, x, y, width, height, 2, 'red', amplitudeX - radius, amplitudeY - radius, frequencyX, frequencyY, undefined, Math.PI);
+  const lScene = new LateralScene(content, rotaryCanvas.getContext('2d'), x, y , sideLength, amplitudeY, frequencyX, HALF_PI);
+  lScene.setPosition(xMidpoint, yMidpoint);
 
-  let rotaryHarmonograph = new RotaryHarmonograph(
-    rScene,
-    x,
-    y,
-    width,
+  let pendulumDialX = new PendulumDial(fsScene, x, yMidpoint - 5, width, 10, 'horizontal', amplitudeX, frequencyX, HALF_PI);
+  let cursor = new Cursor2D(fsScene, x, y, width, height, 2, 'red', amplitudeX, 0, frequencyX, 0, frequencyX, 0);
+
+  let lateralHarmonograph = new LateralHarmonograph(
+    lScene,
+    0,
+    0,
+    width, 
     height,
-    () => {
-      let absoluteX = pendulumDialX.getAbsolutePosition();
-      let absoluteY = pendulumDialY.getAbsolutePosition();
-
-      let relativeX = absoluteX - x;
-      let relativeY = absoluteY - y;
-
-      const {x: offsetX, y: offsetY} = rScene.getOffsets();
-
-      return {x: relativeX - offsetX, y: relativeY - offsetY};
-    }
+    amplitudeX,
+    amplitudeY,
+    frequencyX, 
+    frequencyY,
+    HALF_PI, 
+    3 * HALF_PI // offset because the harmonograph draws inversely to the moving scene
   );
+
+
+  let formula2D = new Formula2D(
+    formulaX,
+    formulaXValues,
+    formulaY,
+    formulaYValues,
+    amplitudeX,
+    amplitudeY,
+    HALF_PI,
+    HALF_PI,
+    HALF_PI,
+    HALF_PI
+  );
+  formula2D.render();
 
   return {
     fsScene,
-    rScene,
-    pendulumDialX,
-    pendulumDialY,
+    lScene,
     cursor,
-    rotaryHarmonograph
+    formula2D,
+    lateralHarmonograph,
+    pendulumDialX
   };
 }
 
-function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, cursor, rotaryHarmonograph) {
+function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmonograph, formula2D) {
 
   const pauseButton = document.getElementById('pause');
   pauseButton.addEventListener('click', (e) => {
     if (fsScene.playing) {
       fsScene.stop();
-      rScene.stop();
+      lScene.stop();
       pauseButton.textContent = 'Resume';
     } else {
       fsScene.start();
-      rScene.start();
+      lScene.start();
       pauseButton.textContent = 'Pause';
     }
   });
@@ -105,7 +120,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
   document.getElementById('reset').addEventListener('click', () => {
     pauseButton.textContent = 'Pause';
     fsScene.reset();
-    rScene.reset();
+    lScene.reset();
   });
 
   const amplitudeXInput = document.getElementById('amplitude-x');
@@ -114,7 +129,6 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
   const frequencyYInput = document.getElementById('frequency-y');
   const phaseShiftXInput = document.getElementById('phase-shift-x');
   const phaseShiftYInput = document.getElementById('phase-shift-y');
-  const rotaryRadiusInput = document.getElementById('rotary-radius');
   const dampingInput = document.getElementById('damping');
 
   frequencyXInput.addEventListener(
@@ -135,7 +149,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         frequencyXInput,
-        [cursor],
+        [cursor, lateralHarmonograph, formula2D],
         'setFrequencyX',
         Math.PI
       ),
@@ -148,7 +162,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         frequencyYInput,
-        [pendulumDialY],
+        [lScene],
         'setFrequency',
         Math.PI
       ),
@@ -161,7 +175,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         frequencyYInput,
-        [cursor],
+        [cursor, lateralHarmonograph, formula2D],
         'setFrequencyY',
         Math.PI
       ),
@@ -187,7 +201,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         phaseShiftXInput,
-        [cursor],
+        [cursor, lateralHarmonograph, formula2D],
         'setPhaseShiftX',
         Math.PI
       ),
@@ -200,7 +214,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         phaseShiftYInput,
-        [pendulumDialY],
+        [lScene],
         'setPhaseShift',
         Math.PI
       ),
@@ -213,7 +227,15 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         phaseShiftYInput,
-        [cursor],
+        [
+          cursor,
+          formula2D,
+          {
+            setPhaseShiftY: (phaseShift) => {
+              lateralHarmonograph.setPhaseShiftY(phaseShift + Math.PI);
+            }
+          }
+        ],
         'setPhaseShiftY',
         Math.PI
       ),
@@ -238,7 +260,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         amplitudeXInput,
-        [cursor],
+        [cursor, lateralHarmonograph, formula2D],
         'setAmplitudeX'
       ),
       100
@@ -250,7 +272,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         amplitudeYInput,
-        [pendulumDialY],
+        [lScene],
         'setAmplitude'
       ),
       100
@@ -262,20 +284,8 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         amplitudeYInput,
-        [cursor],
+        [lateralHarmonograph, formula2D],
         'setAmplitudeY'
-      ),
-      100
-    )
-  );
-
-  rotaryRadiusInput.addEventListener(
-    'input',
-    debounce(
-      createInputHandler(
-        rotaryRadiusInput,
-        [rScene, cursor],
-        'setRadius'
       ),
       100
     )
@@ -286,7 +296,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     debounce(
       createInputHandler(
         dampingInput,
-        [rScene, cursor, pendulumDialX, pendulumDialY],
+        [cursor, pendulumDialX, lScene, lateralHarmonograph, formula2D],
         'setDampingRatio'
       ),
       100
@@ -305,7 +315,7 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
         components.forEach(component => component[methodName](value));
 
         fsScene.reset();
-        rScene.reset();
+        lScene.reset();
       }
     };
   }

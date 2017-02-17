@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <title>Lateral Harmonograph</title>
+        
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+
+    <style>
+
+      html, body {
+        font-family: courier;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+
+      #sidebar {
+        background-color: #EEE;
+        bottom: 0;
+        left: 0;
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        width: 250px;
+      }
+
+      #content {
+        bottom: 0;
+        left: 270px;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+      #rotary {
+        border: 1px solid black;
+        position: absolute;
+        top: 0;
+        z-index: 99;
+      }
+
+      #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+        left: 10px;
+        position: absolute;
+        top: 10px;
+        z-index: 99;
+      }
+
+      #formula-x-values {
+        top: 43px;
+      }
+
+      #formula-y {
+        top: 76px;
+      }
+
+      #formula-y-values {
+        top: 109px;
+      }
+      
+      @media (min-width: 760px) {
+        #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+          font-size: 22px;
+        }
+      }
+
+      @media (max-width: 759px) {
+        #formula-x, #formula-y, #formula-x-values, #formula-y-values {
+          font-size: 14px;
+        }
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
+      input {
+        /*width: 40px;*/
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        display: block;
+        padding: 5px;
+      }
+
+      li.field-label {
+        padding-bottom: 0;
+      }
+
+      .slider > label {
+        vertical-align: top;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="sidebar">
+      <a href="index.html">Back to Home</a>
+
+      <h1>Lateral Harmonograph</h1>
+
+      <ul class="sidebar-controls">
+        <li class="field-label"><label for="frequency-x">Frequency X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-x" step="0.25" min="0.0" max="4" value="0.5" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="frequency-y">Frequency Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="frequency-y" step="0.25" min="0.0" max="4" value="0.5" />
+            <label>4&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-x">Phase Shift X (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-x" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="phase-shift-y">Phase Shift Y (radians)</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="phase-shift-y" step=".5" min="0.0" max="2" value="0.5" />
+            <label>2&pi;</label>
+          </span>
+        </li>
+        <li class="field-label"><label for="amplitude-x">Amplitude X (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-x" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="amplitude-y">Amplitude Y (pixels)</label></li>
+        <li>
+          <span class="slider">
+            <label>10px</label>
+            <input type="range" id="amplitude-y" step="10" min="10" max="150" value="100" />
+            <label>150px</label>
+        </li>
+        <li class="field-label"><label for="damping">Damping Ratio</label></li>
+        <li>
+          <span class="slider">
+            <label>0.0</label>
+            <input type="range" id="damping" step="0.005" min="0.0" max="0.1" value="0" />
+            <label>0.1</label>
+          </span>
+        </li>
+        <li>
+          <button id="pause">Pause</button>
+          <button id="reset">Reset</button>
+        </li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <canvas id="canvas" width="400" height="500"></canvas>
+      <canvas id="rotary" width="300" height="300"></canvas>
+
+      <div id="formula-x"></div>
+      <div id="formula-x-values"></div>
+      <div id="formula-y"></div>
+      <div id="formula-y-values"></div>
+    </div>
+
+    <script src="lateral-harmonograph.bundle.js"></script>
+  </body>
+</html>
