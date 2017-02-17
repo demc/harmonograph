@@ -610,8 +610,8 @@
 		return '\\pi';
 	}
 
-	var FORMULA = 'x = A \\cdot\\sin(f \\cdot t + p)';
-	var FORMULA_DAMPING = 'x = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{dt}';
+	var FORMULA = 'x(t) = A \\cdot\\sin(f \\cdot t + p)';
+	var FORMULA_DAMPING = 'x(t) = A \\cdot\\sin(f \\cdot t + p) \\cdot e^{-dt}';
 
 	var Formula1D = function () {
 		function Formula1D(formulaNode, formulaValuesNode, variable, amplitude, frequency, phaseShift) {
@@ -663,7 +663,7 @@
 			value: function render() {
 				_katex2.default.render(this.dampingRatio ? FORMULA_DAMPING : FORMULA, this.formulaNode);
 
-				_katex2.default.render(this.variable + ' = ' + this.amplitude + ' \\cdot\\sin(' + radian_to_tex(this.frequencyMultiplier) + '\\cdot t + ' + radian_to_tex(this.phaseShiftMultiplier) + ')' + (this.dampingRatio ? '\\cdot e^{' + this.dampingRatio + 't}' : ''), this.formulaValuesNode);
+				_katex2.default.render(this.variable + '(t) = ' + this.amplitude + ' \\cdot\\sin(' + radian_to_tex(this.frequencyMultiplier) + '\\cdot t + ' + radian_to_tex(this.phaseShiftMultiplier) + ')' + (this.dampingRatio ? '\\cdot e^{-' + this.dampingRatio + 't}' : ''), this.formulaValuesNode);
 			}
 		}]);
 
@@ -9881,10 +9881,7 @@
 
 	    _Helpers2.default.syncCanvas(container, ctx.canvas);
 
-	    var _this = _possibleConstructorReturn(this, (FullScreenScene.__proto__ || Object.getPrototypeOf(FullScreenScene)).call(this, container, ctx));
-
-	    _this.height = container.offsetHeight;
-	    _this.width = container.offsetWidth;
+	    var _this = _possibleConstructorReturn(this, (FullScreenScene.__proto__ || Object.getPrototypeOf(FullScreenScene)).call(this, container, ctx, container.offsetWidth, container.offsetHeight));
 
 	    window.addEventListener('resize', function (e) {
 	      _Helpers2.default.syncCanvas(container, ctx.canvas);
@@ -9991,8 +9988,8 @@
 
 	    this.container = container;
 	    this.ctx = ctx;
-	    this.height = width;
-	    this.width = height;
+	    this.height = height;
+	    this.width = width;
 	    this.objects = [];
 	    this.playing = false;
 	    this.clearBetweenFrames = false;
@@ -10000,7 +9997,11 @@
 
 	    this._timer = null;
 
-	    _Helpers2.default.adjustPixelDisplayRadio(ctx);
+	    var canvas = this.ctx.canvas;
+	    canvas.width = width;
+	    canvas.height = height;
+
+	    _Helpers2.default.adjustPixelDisplayRadio(this.ctx);
 	  }
 
 	  _createClass(Scene, [{
@@ -10014,6 +10015,18 @@
 	    value: function setClearBetweenFrames(clearBetweenFrames) {
 	      this.clearBetweenFrames = clearBetweenFrames;
 	      return this;
+	    }
+	  }, {
+	    key: 'setSize',
+	    value: function setSize(width, height) {
+	      this.width = width;
+	      this.height = height;
+
+	      var canvas = this.ctx.canvas;
+	      canvas.width = width;
+	      canvas.height = height;
+
+	      _Helpers2.default.adjustPixelDisplayRadio(this.ctx);
 	    }
 	  }, {
 	    key: 'start',

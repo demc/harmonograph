@@ -47,11 +47,11 @@
 
 	'use strict';
 
-	var _AbsoluteScene = __webpack_require__(38);
+	var _RotaryScene = __webpack_require__(41);
 
-	var _AbsoluteScene2 = _interopRequireDefault(_AbsoluteScene);
+	var _RotaryScene2 = _interopRequireDefault(_RotaryScene);
 
-	var _Cursor2D = __webpack_require__(39);
+	var _Cursor2D = __webpack_require__(38);
 
 	var _Cursor2D2 = _interopRequireDefault(_Cursor2D);
 
@@ -63,7 +63,7 @@
 
 	var _PendulumDial2 = _interopRequireDefault(_PendulumDial);
 
-	var _RotaryHarmonograph = __webpack_require__(40);
+	var _RotaryHarmonograph = __webpack_require__(42);
 
 	var _RotaryHarmonograph2 = _interopRequireDefault(_RotaryHarmonograph);
 
@@ -115,7 +115,7 @@
 	  var frequencyX = _constants.HALF_PI;
 	  var frequencyY = _constants.HALF_PI;
 
-	  var rScene = new _AbsoluteScene2.default(content, rotaryCanvas.getContext('2d'), x, y, width, height, radius, Math.PI / 2);
+	  var rScene = new _RotaryScene2.default(content, rotaryCanvas.getContext('2d'), x, y, width, height, radius, Math.PI / 2);
 	  rScene.setPosition(x, y);
 
 	  var pendulumDialX = new _PendulumDial2.default(fsScene, x, y - 20, width, 10, 'horizontal', amplitudeX - radius, Math.PI / 2);
@@ -504,10 +504,7 @@
 
 	    _Helpers2.default.syncCanvas(container, ctx.canvas);
 
-	    var _this = _possibleConstructorReturn(this, (FullScreenScene.__proto__ || Object.getPrototypeOf(FullScreenScene)).call(this, container, ctx));
-
-	    _this.height = container.offsetHeight;
-	    _this.width = container.offsetWidth;
+	    var _this = _possibleConstructorReturn(this, (FullScreenScene.__proto__ || Object.getPrototypeOf(FullScreenScene)).call(this, container, ctx, container.offsetWidth, container.offsetHeight));
 
 	    window.addEventListener('resize', function (e) {
 	      _Helpers2.default.syncCanvas(container, ctx.canvas);
@@ -616,8 +613,8 @@
 
 	    this.container = container;
 	    this.ctx = ctx;
-	    this.height = width;
-	    this.width = height;
+	    this.height = height;
+	    this.width = width;
 	    this.objects = [];
 	    this.playing = false;
 	    this.clearBetweenFrames = false;
@@ -625,7 +622,11 @@
 
 	    this._timer = null;
 
-	    _Helpers2.default.adjustPixelDisplayRadio(ctx);
+	    var canvas = this.ctx.canvas;
+	    canvas.width = width;
+	    canvas.height = height;
+
+	    _Helpers2.default.adjustPixelDisplayRadio(this.ctx);
 	  }
 
 	  _createClass(Scene, [{
@@ -639,6 +640,18 @@
 	    value: function setClearBetweenFrames(clearBetweenFrames) {
 	      this.clearBetweenFrames = clearBetweenFrames;
 	      return this;
+	    }
+	  }, {
+	    key: 'setSize',
+	    value: function setSize(width, height) {
+	      this.width = width;
+	      this.height = height;
+
+	      var canvas = this.ctx.canvas;
+	      canvas.width = width;
+	      canvas.height = height;
+
+	      _Helpers2.default.adjustPixelDisplayRadio(this.ctx);
 	    }
 	  }, {
 	    key: 'start',
@@ -713,147 +726,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _Scene2 = __webpack_require__(32);
-
-	var _Scene3 = _interopRequireDefault(_Scene2);
-
-	var _constants = __webpack_require__(2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var AbsoluteScene = function (_Scene) {
-	  _inherits(AbsoluteScene, _Scene);
-
-	  function AbsoluteScene(container, ctx, x, y, width, height, radius, frequency, phaseShift) {
-	    _classCallCheck(this, AbsoluteScene);
-
-	    var _this = _possibleConstructorReturn(this, (AbsoluteScene.__proto__ || Object.getPrototypeOf(AbsoluteScene)).call(this, container, ctx));
-
-	    _this.canvas = ctx.canvas;
-	    _this.x = x;
-	    _this.y = y;
-	    _this.width = width;
-	    _this.height = height;
-
-	    _this.radius = radius;
-	    _this.frequency = frequency || 2 * Math.PI;
-	    _this.phaseShift = phaseShift || Math.PI / 2;
-
-	    _this.dampingRatio = 0;
-	    _this.t = 0;
-
-	    var _this$_delta = _this._delta(_this.t),
-	        offsetX = _this$_delta.x,
-	        offsetY = _this$_delta.y;
-
-	    _this._offsetX = offsetX;
-	    _this._offsetY = offsetY;
-	    return _this;
-	  }
-
-	  _createClass(AbsoluteScene, [{
-	    key: 'setPosition',
-	    value: function setPosition(x, y) {
-	      this.canvas.style.left = x + 'px';
-	      this.canvas.style.top = y + 'px';
-
-	      return this;
-	    }
-	  }, {
-	    key: 'setRadius',
-	    value: function setRadius(radius) {
-	      this.radius = radius;
-	      return this;
-	    }
-	  }, {
-	    key: 'setDampingRatio',
-	    value: function setDampingRatio(dampingRatio) {
-	      this.dampingRatio = dampingRatio;
-	      return this;
-	    }
-	  }, {
-	    key: 'clear',
-	    value: function clear() {}
-	  }, {
-	    key: 'reset',
-	    value: function reset() {
-	      _get(AbsoluteScene.prototype.__proto__ || Object.getPrototypeOf(AbsoluteScene.prototype), 'reset', this).call(this);
-	      this.t = 0;
-
-	      var _delta2 = this._delta(this.t),
-	          offsetX = _delta2.x,
-	          offsetY = _delta2.y;
-
-	      this._offsetX = offsetX;
-	      this._offsetY = offsetY;
-	    }
-	  }, {
-	    key: 'draw',
-	    value: function draw() {
-	      _get(AbsoluteScene.prototype.__proto__ || Object.getPrototypeOf(AbsoluteScene.prototype), 'draw', this).call(this);
-	      this.t += _constants.TICK_IN_SEC;
-
-	      var _delta3 = this._delta(this.t),
-	          x = _delta3.x,
-	          y = _delta3.y;
-
-	      this._offsetX = x;
-	      this._offsetY = y;
-	      this.setPosition(this.x + x, this.y + y);
-	    }
-	  }, {
-	    key: 'getOffsets',
-	    value: function getOffsets() {
-	      return {
-	        x: this._offsetX,
-	        y: this._offsetY
-	      };
-	    }
-	  }, {
-	    key: '_delta',
-	    value: function _delta(t) {
-	      var x = this.radius * Math.cos(this.frequency * t + this.phaseShift);
-	      var y = this.radius * Math.sin(this.frequency * t + this.phaseShift);
-
-	      if (this.dampingRatio) {
-	        var e = Math.pow(Math.E, -(this.dampingRatio * t));
-	        x *= e;
-	        y *= e;
-	      }
-
-	      return {
-	        x: x,
-	        y: y
-	      };
-	    }
-	  }]);
-
-	  return AbsoluteScene;
-	}(_Scene3.default);
-
-	exports.default = AbsoluteScene;
-
-/***/ },
-
-/***/ 39:
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _constants = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -872,7 +744,7 @@
 	    this.amplitudeX = amplitudeX;
 	    this.amplitudeY = amplitudeY;
 	    this.frequencyX = frequencyX || _constants.TWO_PI;
-	    this.frequencyY = frequencyY || _constants.TWO_PI;
+	    this.frequencyY = frequencyY === undefined ? _constants.TWO_PI : frequencyY;
 	    this.phaseShiftX = phaseShiftX || _constants.HALF_PI;
 	    this.phaseShiftY = phaseShiftY || _constants.HALF_PI;
 	    this.dampingRatio = 0;
@@ -881,7 +753,7 @@
 	    this.color = color || 'red';
 
 	    this._xOrigin = this.x + this.width / 2;
-	    this._yOrigin = this.y + this.width / 2;
+	    this._yOrigin = this.y + this.height / 2;
 
 	    this.t = 0;
 
@@ -993,13 +865,154 @@
 
 /***/ },
 
-/***/ 40:
+/***/ 41:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _Scene2 = __webpack_require__(32);
+
+	var _Scene3 = _interopRequireDefault(_Scene2);
+
+	var _constants = __webpack_require__(2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var RotaryScene = function (_Scene) {
+	  _inherits(RotaryScene, _Scene);
+
+	  function RotaryScene(container, ctx, x, y, width, height, radius, frequency, phaseShift) {
+	    _classCallCheck(this, RotaryScene);
+
+	    var _this = _possibleConstructorReturn(this, (RotaryScene.__proto__ || Object.getPrototypeOf(RotaryScene)).call(this, container, ctx, width, height));
+
+	    _this.canvas = ctx.canvas;
+	    _this.x = x;
+	    _this.y = y;
+	    _this.width = width;
+	    _this.height = height;
+
+	    _this.radius = radius;
+	    _this.frequency = frequency || 2 * Math.PI;
+	    _this.phaseShift = phaseShift || Math.PI / 2;
+
+	    _this.dampingRatio = 0;
+	    _this.t = 0;
+
+	    var _this$_delta = _this._delta(_this.t),
+	        offsetX = _this$_delta.x,
+	        offsetY = _this$_delta.y;
+
+	    _this._offsetX = offsetX;
+	    _this._offsetY = offsetY;
+	    return _this;
+	  }
+
+	  _createClass(RotaryScene, [{
+	    key: 'setPosition',
+	    value: function setPosition(x, y) {
+	      this.canvas.style.left = x + 'px';
+	      this.canvas.style.top = y + 'px';
+
+	      return this;
+	    }
+	  }, {
+	    key: 'setRadius',
+	    value: function setRadius(radius) {
+	      this.radius = radius;
+	      return this;
+	    }
+	  }, {
+	    key: 'setDampingRatio',
+	    value: function setDampingRatio(dampingRatio) {
+	      this.dampingRatio = dampingRatio;
+	      return this;
+	    }
+	  }, {
+	    key: 'clear',
+	    value: function clear() {}
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      _get(RotaryScene.prototype.__proto__ || Object.getPrototypeOf(RotaryScene.prototype), 'reset', this).call(this);
+	      this.t = 0;
+
+	      var _delta2 = this._delta(this.t),
+	          offsetX = _delta2.x,
+	          offsetY = _delta2.y;
+
+	      this._offsetX = offsetX;
+	      this._offsetY = offsetY;
+	    }
+	  }, {
+	    key: 'draw',
+	    value: function draw() {
+	      _get(RotaryScene.prototype.__proto__ || Object.getPrototypeOf(RotaryScene.prototype), 'draw', this).call(this);
+	      this.t += _constants.TICK_IN_SEC;
+
+	      var _delta3 = this._delta(this.t),
+	          x = _delta3.x,
+	          y = _delta3.y;
+
+	      this._offsetX = x;
+	      this._offsetY = y;
+	      this.setPosition(this.x + x, this.y + y);
+	    }
+	  }, {
+	    key: 'getOffsets',
+	    value: function getOffsets() {
+	      return {
+	        x: this._offsetX,
+	        y: this._offsetY
+	      };
+	    }
+	  }, {
+	    key: '_delta',
+	    value: function _delta(t) {
+	      var x = this.radius * Math.cos(this.frequency * t + this.phaseShift);
+	      var y = this.radius * Math.sin(this.frequency * t + this.phaseShift);
+
+	      if (this.dampingRatio) {
+	        var e = Math.pow(Math.E, -(this.dampingRatio * t));
+	        x *= e;
+	        y *= e;
+	      }
+
+	      return {
+	        x: x,
+	        y: y
+	      };
+	    }
+	  }]);
+
+	  return RotaryScene;
+	}(_Scene3.default);
+
+	exports.default = RotaryScene;
+
+/***/ },
+
+/***/ 42:
 /***/ function(module, exports) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1007,60 +1020,60 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var RotaryHarmonograph = function () {
-		function RotaryHarmonograph(scene, x, y, width, height, callback) {
-			_classCallCheck(this, RotaryHarmonograph);
+	  function RotaryHarmonograph(scene, x, y, width, height, callback) {
+	    _classCallCheck(this, RotaryHarmonograph);
 
-			this.scene = scene;
-			this.ctx = scene.ctx;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			this.dampingRatio = 0;
+	    this.scene = scene;
+	    this.ctx = scene.ctx;
+	    this.x = x;
+	    this.y = y;
+	    this.width = width;
+	    this.height = height;
+	    this.dampingRatio = 0;
 
-			this.callback = callback;
+	    this.callback = callback;
 
-			this.path = new Path2D();
+	    this.path = new Path2D();
 
-			scene.addObject(this);
-		}
+	    scene.addObject(this);
+	  }
 
-		_createClass(RotaryHarmonograph, [{
-			key: 'setDampingRatio',
-			value: function setDampingRatio(dampingRatio) {
-				this.dampingRatio = dampingRatio;
-				return this;
-			}
-		}, {
-			key: 'clear',
-			value: function clear() {}
-		}, {
-			key: 'reset',
-			value: function reset() {
-				this.path = new Path2D();
-				this.ctx.clearRect(this.x, this.y, this.width, this.height);
-			}
-		}, {
-			key: 'tick',
-			value: function tick() {
-				var _callback = this.callback(),
-				    x = _callback.x,
-				    y = _callback.y;
+	  _createClass(RotaryHarmonograph, [{
+	    key: 'setDampingRatio',
+	    value: function setDampingRatio(dampingRatio) {
+	      this.dampingRatio = dampingRatio;
+	      return this;
+	    }
+	  }, {
+	    key: 'clear',
+	    value: function clear() {}
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      this.path = new Path2D();
+	      this.ctx.clearRect(this.x, this.y, this.width, this.height);
+	    }
+	  }, {
+	    key: 'tick',
+	    value: function tick() {
+	      var _callback = this.callback(),
+	          x = _callback.x,
+	          y = _callback.y;
 
-				this.path.lineTo(x, y);
-			}
-		}, {
-			key: 'draw',
-			value: function draw() {
-				this.ctx.save();
-				this.ctx.strokeStyle = '#000';
-				this.ctx.lineWidth = 0.1;
-				this.ctx.stroke(this.path);
-				this.ctx.restore();
-			}
-		}]);
+	      this.path.lineTo(x, y);
+	    }
+	  }, {
+	    key: 'draw',
+	    value: function draw() {
+	      this.ctx.save();
+	      this.ctx.strokeStyle = '#000';
+	      this.ctx.lineWidth = 0.1;
+	      this.ctx.stroke(this.path);
+	      this.ctx.restore();
+	    }
+	  }]);
 
-		return RotaryHarmonograph;
+	  return RotaryHarmonograph;
 	}();
 
 	exports.default = RotaryHarmonograph;
