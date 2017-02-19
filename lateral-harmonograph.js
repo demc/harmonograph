@@ -6,6 +6,8 @@ import LateralScene from './LateralScene';
 import PendulumDial from './PendulumDial';
 
 import {HALF_PI} from './constants';
+import invariantDefault from './invariantDefault';
+import setDefault from './setDefault';
 
 const content = document.getElementById('content');
 const fullScreenCanvas = document.getElementById('canvas');
@@ -131,6 +133,10 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
   const phaseShiftYInput = document.getElementById('phase-shift-y');
   const dampingInput = document.getElementById('damping');
 
+  //
+  // FREQUENCY X
+  //
+
   frequencyXInput.addEventListener(
     'input',
     debounce(
@@ -143,7 +149,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   frequencyXInput.addEventListener(
     'input',
     debounce(
@@ -156,6 +161,12 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(frequencyXInput, pendulumDialX, 'frequency', Math.PI);
+  invariantDefault('frequencyX', pendulumDialX.frequency, [cursor, lateralHarmonograph, formula2D]);
+
+  //
+  // FREQUENCY Y
+  //
 
   frequencyYInput.addEventListener(
     'input',
@@ -169,7 +180,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   frequencyYInput.addEventListener(
     'input',
     debounce(
@@ -182,6 +192,12 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(frequencyYInput, lScene, 'frequency', Math.PI);
+  invariantDefault('frequencyY', lScene.frequency, [lateralHarmonograph, formula2D]);
+
+  //
+  // PHASE SHIFT X
+  // 
 
   phaseShiftXInput.addEventListener(
     'input',
@@ -195,7 +211,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   phaseShiftXInput.addEventListener(
     'input',
     debounce(
@@ -208,6 +223,12 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(phaseShiftXInput, pendulumDialX, 'phaseShift', Math.PI);
+  invariantDefault('phaseShiftX', pendulumDialX.phaseShift, [cursor, lateralHarmonograph, formula2D]);
+
+  //
+  // PHASE SHIFT Y
+  //
 
   phaseShiftYInput.addEventListener(
     'input',
@@ -221,7 +242,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   phaseShiftYInput.addEventListener(
     'input',
     debounce(
@@ -242,6 +262,13 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(phaseShiftYInput, lScene, 'phaseShift', Math.PI);
+  invariantDefault('phaseShiftY', lScene.phaseShift, [cursor, formula2D]);
+  invariantDefault('phaseShiftY', lScene.phaseShift + Math.PI, [lateralHarmonograph]); // has inverse behavior
+
+  //
+  // AMPLITUDE X
+  //
 
   amplitudeXInput.addEventListener(
     'input',
@@ -254,7 +281,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   amplitudeXInput.addEventListener(
     'input',
     debounce(
@@ -266,6 +292,12 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(amplitudeXInput, pendulumDialX, 'amplitude');
+  invariantDefault('amplitudeX', pendulumDialX.amplitude, [cursor, lateralHarmonograph, formula2D]);
+
+  //
+  // AMPLITUDE Y
+  //
 
   amplitudeYInput.addEventListener(
     'input',
@@ -278,7 +310,6 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
-
   amplitudeYInput.addEventListener(
     'input',
     debounce(
@@ -290,6 +321,8 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
       100
     )
   );
+  setDefault(amplitudeYInput, lScene, 'amplitude');
+  invariantDefault('amplitudeY', lScene.amplitude, [lateralHarmonograph, formula2D]);
 
   dampingInput.addEventListener(
     'input',

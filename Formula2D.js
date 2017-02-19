@@ -45,8 +45,12 @@ class Formula2D {
 
     this.amplitudeX = amplitudeX;
     this.amplitudeY = amplitudeY;
+    this.frequencyX = frequencyX;
+    this.frequencyY = frequencyY;
     this.frequencyXMultiplier = frequencyX / Math.PI;
     this.frequencyYMultiplier = frequencyY / Math.PI;
+    this.phaseShiftX = phaseShiftX;
+    this.phaseShiftY = phaseShiftY;
     this.phaseShiftXMultiplier = phaseShiftX / Math.PI;
     this.phaseShiftYMultiplier = phaseShiftY / Math.PI;
     this.dampingRatio = 0;
@@ -68,24 +72,28 @@ class Formula2D {
   }
 
   setFrequencyX(frequency) {
+    this.frequencyX = frequency;
     this.frequencyXMultiplier = Math.round((frequency / Math.PI) * 100) / 100;
     this.renderX();
     return this;
   }
 
   setFrequencyY(frequency) {
+    this.frequencyY = frequency;
     this.frequencyYMultiplier = Math.round((frequency / Math.PI) * 100) / 100;
     this.renderY();
     return this;
   }
 
   setPhaseShiftX(phaseShift) {
+    this.phaseShiftX = phaseShift;
     this.phaseShiftXMultiplier = Math.round((phaseShift / Math.PI) * 100) / 100;
     this.renderX();
     return this;
   }
 
   setPhaseShiftY(phaseShift) {
+    this.phaseShiftY = phaseShift;
     this.phaseShiftYMultiplier = Math.round((phaseShift / Math.PI) * 100) / 100;
     this.renderY();
     return this;
