@@ -6,6 +6,7 @@ import LateralScene from './LateralScene';
 import PendulumDial from './PendulumDial';
 
 import {HALF_PI} from './constants';
+import download from './download';
 import invariantDefault from './invariantDefault';
 import setDefault from './setDefault';
 
@@ -124,6 +125,17 @@ function setupInputHandlers(fsScene, lScene, pendulumDialX, cursor, lateralHarmo
     fsScene.reset();
     lScene.reset();
   });
+
+  const downloadHandler = download(lScene.canvas, 'lateral-harmonograph');
+  document.getElementById('download').addEventListener(
+    'click',
+    (e) => {
+      pauseButton.textContent = 'Resume';
+      fsScene.stop();
+      lScene.stop();
+      downloadHandler(e);
+    }
+  );
 
   const amplitudeXInput = document.getElementById('amplitude-x');
   const amplitudeYInput = document.getElementById('amplitude-y');

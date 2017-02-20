@@ -5,6 +5,7 @@ import PendulumDial from './PendulumDial';
 import RotaryHarmonograph from './RotaryHarmonograph';
 
 import {HALF_PI} from './constants';
+import download from './download';
 
 const content = document.getElementById('content');
 const fullScreenCanvas = document.getElementById('canvas');
@@ -107,6 +108,17 @@ function setupInputHandlers(fsScene, rScene, pendulumDialX, pendulumDialY, curso
     fsScene.reset();
     rScene.reset();
   });
+
+  const downloadHandler = download(rScene.canvas, 'rotary-harmonograph');
+  document.getElementById('download').addEventListener(
+    'click',
+    (e) => {
+      pauseButton.textContent = 'Resume';
+      fsScene.stop();
+      rScene.stop();
+      downloadHandler(e);
+    }
+  );
 
   const amplitudeXInput = document.getElementById('amplitude-x');
   const amplitudeYInput = document.getElementById('amplitude-y');
