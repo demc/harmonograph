@@ -72,6 +72,18 @@
 
 	var _constants = __webpack_require__(2);
 
+	var _download = __webpack_require__(41);
+
+	var _download2 = _interopRequireDefault(_download);
+
+	var _invariantDefault = __webpack_require__(42);
+
+	var _invariantDefault2 = _interopRequireDefault(_invariantDefault);
+
+	var _setDefault = __webpack_require__(43);
+
+	var _setDefault2 = _interopRequireDefault(_setDefault);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var content = document.getElementById('content');
@@ -166,6 +178,14 @@
 	    lScene.reset();
 	  });
 
+	  var downloadHandler = (0, _download2.default)(lScene.canvas, 'lateral-harmonograph');
+	  document.getElementById('download').addEventListener('click', function (e) {
+	    pauseButton.textContent = 'Resume';
+	    fsScene.stop();
+	    lScene.stop();
+	    downloadHandler(e);
+	  });
+
 	  var amplitudeXInput = document.getElementById('amplitude-x');
 	  var amplitudeYInput = document.getElementById('amplitude-y');
 	  var frequencyXInput = document.getElementById('frequency-x');
@@ -174,33 +194,64 @@
 	  var phaseShiftYInput = document.getElementById('phase-shift-y');
 	  var dampingInput = document.getElementById('damping');
 
-	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [pendulumDialX], 'setFrequency', Math.PI), 100));
+	  //
+	  // FREQUENCY X
+	  //
 
+	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [pendulumDialX], 'setFrequency', Math.PI), 100));
 	  frequencyXInput.addEventListener('input', debounce(createInputHandler(frequencyXInput, [cursor, lateralHarmonograph, formula2D], 'setFrequencyX', Math.PI), 100));
+	  (0, _setDefault2.default)(frequencyXInput, pendulumDialX, 'frequency', Math.PI);
+	  (0, _invariantDefault2.default)('frequencyX', pendulumDialX.frequency, [cursor, lateralHarmonograph, formula2D]);
+
+	  //
+	  // FREQUENCY Y
+	  //
 
 	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [lScene], 'setFrequency', Math.PI), 100));
-
 	  frequencyYInput.addEventListener('input', debounce(createInputHandler(frequencyYInput, [cursor, lateralHarmonograph, formula2D], 'setFrequencyY', Math.PI), 100));
+	  (0, _setDefault2.default)(frequencyYInput, lScene, 'frequency', Math.PI);
+	  (0, _invariantDefault2.default)('frequencyY', lScene.frequency, [lateralHarmonograph, formula2D]);
+
+	  //
+	  // PHASE SHIFT X
+	  // 
 
 	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [pendulumDialX], 'setPhaseShift', Math.PI), 100));
-
 	  phaseShiftXInput.addEventListener('input', debounce(createInputHandler(phaseShiftXInput, [cursor, lateralHarmonograph, formula2D], 'setPhaseShiftX', Math.PI), 100));
+	  (0, _setDefault2.default)(phaseShiftXInput, pendulumDialX, 'phaseShift', Math.PI);
+	  (0, _invariantDefault2.default)('phaseShiftX', pendulumDialX.phaseShift, [cursor, lateralHarmonograph, formula2D]);
+
+	  //
+	  // PHASE SHIFT Y
+	  //
 
 	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [lScene], 'setPhaseShift', Math.PI), 100));
-
 	  phaseShiftYInput.addEventListener('input', debounce(createInputHandler(phaseShiftYInput, [cursor, formula2D, {
 	    setPhaseShiftY: function setPhaseShiftY(phaseShift) {
 	      lateralHarmonograph.setPhaseShiftY(phaseShift + Math.PI);
 	    }
 	  }], 'setPhaseShiftY', Math.PI), 100));
+	  (0, _setDefault2.default)(phaseShiftYInput, lScene, 'phaseShift', Math.PI);
+	  (0, _invariantDefault2.default)('phaseShiftY', lScene.phaseShift, [cursor, formula2D]);
+	  (0, _invariantDefault2.default)('phaseShiftY', lScene.phaseShift + Math.PI, [lateralHarmonograph]); // has inverse behavior
+
+	  //
+	  // AMPLITUDE X
+	  //
 
 	  amplitudeXInput.addEventListener('input', debounce(createInputHandler(amplitudeXInput, [pendulumDialX], 'setAmplitude'), 100));
-
 	  amplitudeXInput.addEventListener('input', debounce(createInputHandler(amplitudeXInput, [cursor, lateralHarmonograph, formula2D], 'setAmplitudeX'), 100));
+	  (0, _setDefault2.default)(amplitudeXInput, pendulumDialX, 'amplitude');
+	  (0, _invariantDefault2.default)('amplitudeX', pendulumDialX.amplitude, [cursor, lateralHarmonograph, formula2D]);
+
+	  //
+	  // AMPLITUDE Y
+	  //
 
 	  amplitudeYInput.addEventListener('input', debounce(createInputHandler(amplitudeYInput, [lScene], 'setAmplitude'), 100));
-
 	  amplitudeYInput.addEventListener('input', debounce(createInputHandler(amplitudeYInput, [lateralHarmonograph, formula2D], 'setAmplitudeY'), 100));
+	  (0, _setDefault2.default)(amplitudeYInput, lScene, 'amplitude');
+	  (0, _invariantDefault2.default)('amplitudeY', lScene.amplitude, [lateralHarmonograph, formula2D]);
 
 	  dampingInput.addEventListener('input', debounce(createInputHandler(dampingInput, [cursor, pendulumDialX, lScene, lateralHarmonograph, formula2D], 'setDampingRatio'), 100));
 
@@ -9946,8 +9997,12 @@
 
 	    this.amplitudeX = amplitudeX;
 	    this.amplitudeY = amplitudeY;
+	    this.frequencyX = frequencyX;
+	    this.frequencyY = frequencyY;
 	    this.frequencyXMultiplier = frequencyX / Math.PI;
 	    this.frequencyYMultiplier = frequencyY / Math.PI;
+	    this.phaseShiftX = phaseShiftX;
+	    this.phaseShiftY = phaseShiftY;
 	    this.phaseShiftXMultiplier = phaseShiftX / Math.PI;
 	    this.phaseShiftYMultiplier = phaseShiftY / Math.PI;
 	    this.dampingRatio = 0;
@@ -9973,6 +10028,7 @@
 	  }, {
 	    key: 'setFrequencyX',
 	    value: function setFrequencyX(frequency) {
+	      this.frequencyX = frequency;
 	      this.frequencyXMultiplier = Math.round(frequency / Math.PI * 100) / 100;
 	      this.renderX();
 	      return this;
@@ -9980,6 +10036,7 @@
 	  }, {
 	    key: 'setFrequencyY',
 	    value: function setFrequencyY(frequency) {
+	      this.frequencyY = frequency;
 	      this.frequencyYMultiplier = Math.round(frequency / Math.PI * 100) / 100;
 	      this.renderY();
 	      return this;
@@ -9987,6 +10044,7 @@
 	  }, {
 	    key: 'setPhaseShiftX',
 	    value: function setPhaseShiftX(phaseShift) {
+	      this.phaseShiftX = phaseShift;
 	      this.phaseShiftXMultiplier = Math.round(phaseShift / Math.PI * 100) / 100;
 	      this.renderX();
 	      return this;
@@ -9994,6 +10052,7 @@
 	  }, {
 	    key: 'setPhaseShiftY',
 	    value: function setPhaseShiftY(phaseShift) {
+	      this.phaseShiftY = phaseShift;
 	      this.phaseShiftYMultiplier = Math.round(phaseShift / Math.PI * 100) / 100;
 	      this.renderY();
 	      return this;
@@ -10490,6 +10549,69 @@
 	}(_Scene3.default);
 
 	exports.default = LateralScene;
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (canvas, name) {
+	  return function (e) {
+	    var url = canvas.toDataURL();
+	    var el = document.createElement('a');
+	    el.href = url;
+	    el.download = name || 'harmonograph.png';
+	    el.click();
+	    // document.body.appendChild(el);
+	  };
+	};
+
+/***/ },
+/* 42 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (name, value, components, message) {
+	  components.forEach(function (cmp) {
+	    if (cmp[name] !== value) {
+	      if (message) {
+	        throw message;
+	      } else {
+	        throw name + " (" + cmp[name] + ") on " + cmp.constructor.name + " does not match " + value;
+	      }
+	    }
+	  });
+	};
+
+/***/ },
+/* 43 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (node, component, name, divisor) {
+	  var value = component[name];
+
+	  if (divisor) {
+	    value /= divisor;
+	  }
+
+	  node.value = value;
+	};
 
 /***/ }
 /******/ ]);

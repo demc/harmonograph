@@ -10352,8 +10352,12 @@
 
 	    this.amplitudeX = amplitudeX;
 	    this.amplitudeY = amplitudeY;
+	    this.frequencyX = frequencyX;
+	    this.frequencyY = frequencyY;
 	    this.frequencyXMultiplier = frequencyX / Math.PI;
 	    this.frequencyYMultiplier = frequencyY / Math.PI;
+	    this.phaseShiftX = phaseShiftX;
+	    this.phaseShiftY = phaseShiftY;
 	    this.phaseShiftXMultiplier = phaseShiftX / Math.PI;
 	    this.phaseShiftYMultiplier = phaseShiftY / Math.PI;
 	    this.dampingRatio = 0;
@@ -10379,6 +10383,7 @@
 	  }, {
 	    key: 'setFrequencyX',
 	    value: function setFrequencyX(frequency) {
+	      this.frequencyX = frequency;
 	      this.frequencyXMultiplier = Math.round(frequency / Math.PI * 100) / 100;
 	      this.renderX();
 	      return this;
@@ -10386,6 +10391,7 @@
 	  }, {
 	    key: 'setFrequencyY',
 	    value: function setFrequencyY(frequency) {
+	      this.frequencyY = frequency;
 	      this.frequencyYMultiplier = Math.round(frequency / Math.PI * 100) / 100;
 	      this.renderY();
 	      return this;
@@ -10393,6 +10399,7 @@
 	  }, {
 	    key: 'setPhaseShiftX',
 	    value: function setPhaseShiftX(phaseShift) {
+	      this.phaseShiftX = phaseShift;
 	      this.phaseShiftXMultiplier = Math.round(phaseShift / Math.PI * 100) / 100;
 	      this.renderX();
 	      return this;
@@ -10400,6 +10407,7 @@
 	  }, {
 	    key: 'setPhaseShiftY',
 	    value: function setPhaseShiftY(phaseShift) {
+	      this.phaseShiftY = phaseShift;
 	      this.phaseShiftYMultiplier = Math.round(phaseShift / Math.PI * 100) / 100;
 	      this.renderY();
 	      return this;

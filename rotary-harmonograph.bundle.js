@@ -47,7 +47,7 @@
 
 	'use strict';
 
-	var _RotaryScene = __webpack_require__(41);
+	var _RotaryScene = __webpack_require__(44);
 
 	var _RotaryScene2 = _interopRequireDefault(_RotaryScene);
 
@@ -63,11 +63,15 @@
 
 	var _PendulumDial2 = _interopRequireDefault(_PendulumDial);
 
-	var _RotaryHarmonograph = __webpack_require__(42);
+	var _RotaryHarmonograph = __webpack_require__(45);
 
 	var _RotaryHarmonograph2 = _interopRequireDefault(_RotaryHarmonograph);
 
 	var _constants = __webpack_require__(2);
+
+	var _download = __webpack_require__(41);
+
+	var _download2 = _interopRequireDefault(_download);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -165,6 +169,14 @@
 	    pauseButton.textContent = 'Pause';
 	    fsScene.reset();
 	    rScene.reset();
+	  });
+
+	  var downloadHandler = (0, _download2.default)(rScene.canvas, 'rotary-harmonograph');
+	  document.getElementById('download').addEventListener('click', function (e) {
+	    pauseButton.textContent = 'Resume';
+	    fsScene.stop();
+	    rScene.stop();
+	    downloadHandler(e);
 	  });
 
 	  var amplitudeXInput = document.getElementById('amplitude-x');
@@ -866,6 +878,28 @@
 /***/ },
 
 /***/ 41:
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (canvas, name) {
+	  return function (e) {
+	    var url = canvas.toDataURL();
+	    var el = document.createElement('a');
+	    el.href = url;
+	    el.download = name || 'harmonograph.png';
+	    el.click();
+	    // document.body.appendChild(el);
+	  };
+	};
+
+/***/ },
+
+/***/ 44:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1006,7 +1040,7 @@
 
 /***/ },
 
-/***/ 42:
+/***/ 45:
 /***/ function(module, exports) {
 
 	'use strict';
